@@ -6,6 +6,7 @@ import permisoRoute from './permisoRoute.js'
 import rolRoute from './rolRoute.js'
 import equipoRoute from './equipoRoute.js'
 import usuarioRoute from './usuarioRoute.js'
+import authRoute from './authRoute.js'
 import { authenticateJWT } from '../middlewares/authMiddleware.js'
 
 /**
@@ -17,6 +18,11 @@ import { authenticateJWT } from '../middlewares/authMiddleware.js'
  */
 const router = express.Router()
 
+
+// Rutas públicas (sin JWT)
+router.use('/auth', authRoute)
+
+// Rutas protegidas
 router.use('/empresas', authenticateJWT, empresaRoute)
 router.use('/sedes', authenticateJWT, sedeRoute)
 router.use('/departamentos', authenticateJWT, departamentoRoute)
