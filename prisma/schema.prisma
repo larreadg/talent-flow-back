@@ -137,6 +137,7 @@ model Usuario {
   sedeId         String? @db.Uuid
 
   username String
+  password String   // hash de la contraseña
   email    String
   nombre   String?
   apellido String?
