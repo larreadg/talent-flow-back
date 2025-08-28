@@ -2,6 +2,8 @@
 import express from 'express'
 import { body, param, query } from 'express-validator'
 import { UsuarioController } from '../controllers/usuarioController.js'
+import { verifyRol } from '../middlewares/roleMiddleware.js'
+import { TF_ADMINS } from '../utils/utils.js'
 
 /** @typedef {import('express').Router} Router */
 
@@ -17,67 +19,23 @@ const ORDER_FIELDS = ['username', 'email', 'nombre', 'apellido', 'fc', 'fm']
 const router = express.Router()
 
 /**
- * GET /usuarios/empresa/:empresaId
- * Lista usuarios de una empresa con paginación, búsqueda y ordenamiento.
- *
- * Path param:
- * - empresaId: UUID
- *
- * Query:
- * - page?: number (>=1)
- * - pageSize?: number (>=1)
- * - q?: string
- * - orderBy?: 'username' | 'email' | 'nombre' | 'apellido' | 'fc' | 'fm'
- * - order?: 'asc' | 'desc'
- * - activo?: boolean
- * - sedeId?: UUID
- * - departamentoId?: UUID
+ * GET /usuarios
+ * Obtiene los usuarios de una empresa
  */
 router.get(
-  '/empresa/:empresaId',
+  '',
+  verifyRol(TF_ADMINS),
   [
-    param('empresaId').isUUID().withMessage('empresaId debe ser un UUID válido'),
     query('page').optional().isInt({ min: 1 }).toInt(),
     query('pageSize').optional().isInt({ min: 1 }).toInt(),
     query('q').optional().isString().trim(),
-    query('orderBy').optional().isIn(ORDER_FIELDS).withMessage(`orderBy debe ser uno de: ${ORDER_FIELDS.join(', ')}`),
-    query('order').optional().isIn(['asc', 'desc']).withMessage('order debe ser asc o desc'),
+    query('orderBy').optional().isIn(['username','email','nombre','apellido','fc','fm']),
+    query('order').optional().isIn(['asc','desc']),
     query('activo').optional().isBoolean().toBoolean(),
-    query('sedeId').optional().isUUID().withMessage('sedeId debe ser UUID'),
-    query('departamentoId').optional().isUUID().withMessage('departamentoId debe ser UUID'),
+    query('sedeId').optional().isUUID(),
+    query('departamentoId').optional().isUUID(),
   ],
-  UsuarioController.getByEmpresa
-)
-
-/**
- * GET /usuarios/departamento/:departamentoId
- * Lista usuarios de un departamento con paginación, búsqueda y ordenamiento.
- *
- * Path param:
- * - departamentoId: UUID
- *
- * Query:
- * - page?: number (>=1)
- * - pageSize?: number (>=1)
- * - q?: string
- * - orderBy?: 'username' | 'email' | 'nombre' | 'apellido' | 'fc' | 'fm'
- * - order?: 'asc' | 'desc'
- * - activo?: boolean
- * - sedeId?: UUID
- */
-router.get(
-  '/departamento/:departamentoId',
-  [
-    param('departamentoId').isUUID().withMessage('departamentoId debe ser un UUID válido'),
-    query('page').optional().isInt({ min: 1 }).toInt(),
-    query('pageSize').optional().isInt({ min: 1 }).toInt(),
-    query('q').optional().isString().trim(),
-    query('orderBy').optional().isIn(ORDER_FIELDS).withMessage(`orderBy debe ser uno de: ${ORDER_FIELDS.join(', ')}`),
-    query('order').optional().isIn(['asc', 'desc']).withMessage('order debe ser asc o desc'),
-    query('activo').optional().isBoolean().toBoolean(),
-    query('sedeId').optional().isUUID().withMessage('sedeId debe ser UUID'),
-  ],
-  UsuarioController.getByDepartamento
+  UsuarioController.get
 )
 
 /**
@@ -86,6 +44,7 @@ router.get(
  */
 router.get(
   '/:id',
+  verifyRol(TF_ADMINS),
   [param('id').isUUID().withMessage('id debe ser un UUID válido')],
   UsuarioController.getById
 )
@@ -104,11 +63,13 @@ router.get(
  */
 router.patch(
   '/:id',
+  verifyRol(TF_ADMINS),
   [
     param('id').isUUID().withMessage('id debe ser un UUID válido'),
     body('empresaId').optional().isUUID().withMessage('empresaId debe ser UUID'),
     body('departamentoId').optional().isUUID().withMessage('departamentoId debe ser UUID'),
     body('sedeId').optional().isUUID().withMessage('sedeId debe ser UUID'),
+    body('rolId').isUUID().withMessage('rolId debe ser un UUID válido'),
     body('nombre').optional().isString().trim(),
     body('apellido').optional().isString().trim(),
     body('telefono').optional().isString().trim(),
@@ -117,61 +78,45 @@ router.patch(
 )
 
 /**
- * PATCH /usuarios/:id/roles
- * Agrega y/o quita roles a un usuario (con scopes opcionales).
- *
- * Body:
- * - add?: Array<{ rolId: UUID, scopeSedeId?: UUID, scopeDepartamentoId?: UUID, scopeEquipoId?: UUID, validFrom?: ISODate, validTo?: ISODate }>
- * - remove?: Array<UUID | { rolId: UUID, scopeSedeId?: UUID, scopeDepartamentoId?: UUID, scopeEquipoId?: UUID }>
- */
-router.patch(
-  '/:id/roles',
-  [
-    param('id').isUUID().withMessage('id debe ser un UUID válido'),
-    body('add').optional().isArray().withMessage('add debe ser un array'),
-    body('add.*.rolId').optional().isUUID().withMessage('rolId debe ser UUID'),
-    body('add.*.scopeSedeId').optional().isUUID().withMessage('scopeSedeId debe ser UUID'),
-    body('add.*.scopeDepartamentoId').optional().isUUID().withMessage('scopeDepartamentoId debe ser UUID'),
-    body('add.*.scopeEquipoId').optional().isUUID().withMessage('scopeEquipoId debe ser UUID'),
-    body('add.*.validFrom').optional().isISO8601().withMessage('validFrom debe ser fecha ISO'),
-    body('add.*.validTo').optional().isISO8601().withMessage('validTo debe ser fecha ISO'),
-    body('remove').optional().isArray().withMessage('remove debe ser un array'),
-    // Nota: `remove` admite UUIDs o objetos; validación flexible para no bloquear casos mixtos
-  ],
-  UsuarioController.patchRoles
-)
-
-/**
- * PATCH /usuarios/:id/equipos
- * Agrega y/o quita equipos a un usuario.
- *
- * Body:
- * - add?: Array<{ equipoId: UUID, rolEnEquipo?: string, validFrom?: ISODate, validTo?: ISODate }>
- * - remove?: UUID[]
- */
-router.patch(
-  '/:id/equipos',
-  [
-    param('id').isUUID().withMessage('id debe ser un UUID válido'),
-    body('add').optional().isArray().withMessage('add debe ser un array'),
-    body('add.*.equipoId').optional().isUUID().withMessage('equipoId debe ser UUID'),
-    body('add.*.rolEnEquipo').optional().isString().trim(),
-    body('add.*.validFrom').optional().isISO8601().withMessage('validFrom debe ser fecha ISO'),
-    body('add.*.validTo').optional().isISO8601().withMessage('validTo debe ser fecha ISO'),
-    body('remove').optional().isArray().withMessage('remove debe ser un array'),
-    body('remove.*').optional().isUUID().withMessage('IDs de remove deben ser UUID'),
-  ],
-  UsuarioController.patchEquipos
-)
-
-/**
  * DELETE /usuarios/:id
  * Desactiva (soft delete) un usuario.
  */
 router.delete(
   '/:id',
+  verifyRol(TF_ADMINS),
   [param('id').isUUID().withMessage('id debe ser un UUID válido')],
   UsuarioController.delete
+)
+
+/**
+ * POST /usuarios
+ * Registra un nuevo usuario con password hasheado.
+ *
+ * Body (requeridos):
+ * - empresaId: UUID
+ * - username: string
+ * - email: email
+ * - password: string (min 8)
+ * - nombre: string
+ * - apellido: string
+ * - telefono: string
+ *
+ * Body (opcionales):
+ * - departamentoId?: UUID
+ * - sedeId?: UUID
+ */
+router.post(
+  '',
+  verifyRol(TF_ADMINS),
+  [
+    body('email').notEmpty().withMessage('email es requerido').bail().isEmail().withMessage('email inválido').normalizeEmail(),
+    body('nombre').notEmpty().withMessage('nombre es requerido').bail().isString().trim(),
+    body('apellido').notEmpty().withMessage('apellido es requerido').bail().isString().trim(),
+    body('telefono').notEmpty().withMessage('telefono es requerido').bail().isString().trim().matches(/^595\d{9}$/).withMessage('telefono debe iniciar con 595 y tener 12 dígitos'),
+    body('rolId').isUUID().withMessage('rolId debe ser un UUID válido'),
+    body('departamentoId').optional().isUUID().withMessage('departamentoId debe ser un UUID válido'),
+  ],
+  UsuarioController.post
 )
 
 export default router

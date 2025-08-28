@@ -1,7 +1,7 @@
 import { prisma } from '../prismaClient.js'
 import { mapPrismaError, TalentFlowError } from '../utils/error.js'
 import { getCurrentUser } from '../middlewares/requestContext.js'
-import { pick } from '../utils/utils.js'
+import { hasRol, pick, TF_SYS_ADMIN } from '../utils/utils.js'
 
 // Campos permitidos para create/update
 const ALLOWED_FIELDS = ['nombre', 'razonSocial', 'ruc']
@@ -23,6 +23,12 @@ const ALLOWED_FIELDS = ['nombre', 'razonSocial', 'ruc']
  * @throws {TalentFlowError} Cuando ocurre un error al consultar la base.
  */
 async function getAll({ page = 1, pageSize = 25, q, orderBy = 'nombre', order = 'asc' } = {}) {
+  
+  const currentUser = getCurrentUser()
+  if(!hasRol(currentUser, TF_SYS_ADMIN)) {
+    throw new TalentFlowError(`No tiene permisos para esta acción`, 403)
+  }
+
   const skip = Math.max(0, (Number(page) - 1) * Number(pageSize))
   const take = Math.max(1, Number(pageSize))
 
@@ -68,6 +74,10 @@ async function getAll({ page = 1, pageSize = 25, q, orderBy = 'nombre', order = 
  * @throws {TalentFlowError} 404 si no existe la empresa.
  */
 async function getById(id) {
+  const currentUser = getCurrentUser()
+  if(!hasRol(currentUser, TF_SYS_ADMIN)) {
+    throw new TalentFlowError(`No tiene permisos para esta acción`, 403)
+  }
   const item = await prisma.empresa.findUnique({ where: { id } })
   if (!item) throw new TalentFlowError('Empresa no encontrada.', 404)
   return item
@@ -85,6 +95,9 @@ async function getById(id) {
 async function post(input = {}) {
   try {
     const currentUser = getCurrentUser()
+    if(!hasRol(currentUser, TF_SYS_ADMIN)) {
+      throw new TalentFlowError(`No tiene permisos para esta acción`, 403)
+    }
     const data = pick(input, ALLOWED_FIELDS)
     // Auditoría
     data.uc = currentUser.id
@@ -110,6 +123,9 @@ async function post(input = {}) {
 async function patch(id, input = {}) {
   try {
     const currentUser = getCurrentUser()
+    if(!hasRol(currentUser, TF_SYS_ADMIN)) {
+      throw new TalentFlowError(`No tiene permisos para esta acción`, 403)
+    }
     const data = pick(input, ALLOWED_FIELDS)
     data.um = currentUser.id
 
@@ -133,6 +149,10 @@ async function patch(id, input = {}) {
  */
 async function remove(id) {
   try {
+    const currentUser = getCurrentUser()
+    if(!hasRol(currentUser, TF_SYS_ADMIN)) {
+      throw new TalentFlowError(`No tiene permisos para esta acción`, 403)
+    }
     const deleted = await prisma.empresa.delete({ where: { id } })
     return deleted
   } catch (e) {

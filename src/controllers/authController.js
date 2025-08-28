@@ -8,45 +8,6 @@ import { Response } from '../utils/response.js'
 /** @typedef {import('express').Response} ExpressResponse */
 
 /**
- * Registra un nuevo usuario con password hasheado.
- *
- * Body requerido:
- * - empresaId: string (UUID)
- * - username: string
- * - email: string
- * - password: string
- * - nombre: string
- * - apellido: string
- * - telefono: string
- *
- * Body opcional:
- * - departamentoId?: string (UUID)
- * - sedeId?: string (UUID)
- *
- * @param {Request} req
- * @param {ExpressResponse} res
- * @returns {Promise<void>}
- */
-async function register(req, res) {
-  try {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).send(new Response('error', 400, null, errors.array()))
-    }
-
-    const created = await AuthService.registerUsuario(req.body)
-    return res
-      .status(201)
-      .send(new Response('success', 201, created, 'Usuario registrado exitosamente'))
-  } catch (e) {
-    if (e instanceof TalentFlowError) {
-      return res.status(e.code).send(new Response('error', e.code, null, e.message))
-    }
-    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
-  }
-}
-
-/**
  * Inicia sesión con username o email + password.
  * Retorna un JWT firmado y los datos públicos del usuario.
  *
@@ -69,10 +30,36 @@ async function login(req, res) {
       return res.status(400).send(new Response('error', 400, null, errors.array()))
     }
 
-    const result = await AuthService.login(req.body)
+    const result = await AuthService.login({...req.body, ip: req.ip})
     return res
       .status(200)
       .send(new Response('success', 200, result, 'Login exitoso'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
+
+/**
+ * Resetea una contraseña
+ *
+ * @param {Request} req
+ * @param {ExpressResponse} res
+ * @returns {Promise<void>}
+ */
+async function updatePass(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+
+    const result = await AuthService.updatePass(req.body)
+    return res
+      .status(200)
+      .send(new Response('success', 200, result, 'Contraseña actualizada'))
   } catch (e) {
     if (e instanceof TalentFlowError) {
       return res.status(e.code).send(new Response('error', e.code, null, e.message))
@@ -86,6 +73,6 @@ async function login(req, res) {
  * `import { AuthController } from '../controllers/authController.js'`
  */
 export const AuthController = {
-  register,
   login,
+  updatePass
 }

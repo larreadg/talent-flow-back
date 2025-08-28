@@ -37,12 +37,11 @@ export async function authenticateJWT(req, res, next) {
   try {
     /** @type {{ username: string } & Record<string, any>} */
     const payload = jwt.verify(token, process.env.JWT_SECRET)
-    /** @type {Usuario|null} */
-    const user = await prisma.usuario.findFirst({ where: { username: payload.username } })
-    if (!user) {
-      return res.status(401).json(new Response('error', 401, null, 'Token inválido o expirado'))
+    req.user = {
+      id: payload.id,
+      rol: payload.rol,
+      empresaId: payload.empresaId
     }
-    req.user = user
     next()
   } catch {
     return res.status(401).json(new Response('error', 401, null, 'Token inválido o expirado'))

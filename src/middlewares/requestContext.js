@@ -58,7 +58,7 @@ export function contextMiddleware(req, res, next) {
  * - Un middleware de autenticación (p. ej. `authenticateJWT`) haya
  *   colocado el objeto `Usuario` en `req.user`.
  *
- * @returns {Usuario} El usuario autenticado actual.
+ * @returns {{ id: string, rol: string, empresaId: string }} El usuario autenticado actual (resumido).
  * @throws {Error} Si no hay un usuario en el contexto de petición.
  *
  */

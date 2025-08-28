@@ -1,15 +1,15 @@
-// scripts/seedInitialAdmin.js
+// scripts/seedEmpresaUsuarioRoles.js
 import { prisma } from '../src/prismaClient.js'
 import { randomBytes, scryptSync } from 'crypto'
 
-/* ==========================
- * Helpers de contraseña
- * ========================== */
+/** ============================
+ * Helpers
+ * ============================ */
 function hashPassword(plain) {
   if (!plain || typeof plain !== 'string') throw new Error('Password inválido')
   const N = 16384, r = 8, p = 1, keylen = 32
   const salt = randomBytes(16)
-  const buf = scryptSync(plain, salt, keylen, { N, r, p })
+  const buf  = scryptSync(plain, salt, keylen, { N, r, p })
   return `scrypt$${N}$${r}$${p}$${salt.toString('hex')}$${buf.toString('hex')}`
 }
 
@@ -20,60 +20,36 @@ function genPassword(len = 16) {
     .slice(0, len)
 }
 
-/* ==========================
- * Catálogo de permisos
- * ========================== */
-const BASE_RESOURCES = [
-  { key: 'empresa', name: 'Empresa' },
-  { key: 'sede', name: 'Sede' },
-  { key: 'departamento', name: 'Departamento' },
-  { key: 'rol', name: 'Rol' },
-  { key: 'permiso', name: 'Permiso' },
-  { key: 'equipo', name: 'Equipo' },
-  { key: 'usuario', name: 'Usuario' },
-]
+/** ============================
+ * Datos de seed
+ * ============================ */
+const EMPRESA = {
+  nombre: 'TalentFlow',
+  razonSocial: 'TalentFlow',
+  ruc: '0',
+}
 
-const CRUD = ['read', 'create', 'update', 'delete']
+const ADMIN = {
+  nombre: 'Diego',
+  apellido: 'Larrea',
+  telefono: '595972413798',
+  email: 'larreadg@gmail.com',
+  username: 'larreadg@gmail.com',
+}
 
-const basePermissions = BASE_RESOURCES.flatMap(r =>
-  CRUD.map(a => ({
-    clave: `${r.key}.${a}`,                // p.ej. empresa.read
-    recurso: r.key,                        // empresa
-    accion: a,                             // read
-    descripcion: `${r.name}::${cap(a)}`,   // Empresa::Read (para UI)
-  }))
-)
+const ROLE_NAMES = ['TF_SYS_ADMIN', 'TF_ADMIN', 'TF_LECTOR']
 
-const compositePermissions = [
-  { clave: 'rol.permissions.update', recurso: 'rol', accion: 'permissions.update', descripcion: 'Rol::Permissions::Update' },
-  { clave: 'usuario.roles.update', recurso: 'usuario', accion: 'roles.update', descripcion: 'Usuario::Roles::Update' },
-  { clave: 'usuario.equipos.update', recurso: 'usuario', accion: 'equipos.update', descripcion: 'Usuario::Equipos::Update' },
-]
-
-function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1) }
-
-/* ==========================
+/** ============================
  * Seed
- * ========================== */
+ * ============================ */
 async function main() {
-  const EMPRESA = {
-    nombre: 'TalentFlow',
-    razonSocial: 'TalentFlow',
-    ruc: '0',
-  }
-
-  const ADMIN = {
-    nombre: 'Diego',
-    apellido: 'Larrea',
-    telefono: '595972413798', // 12 dígitos, empieza con 595
-    email: 'larreadg@gmail.com',
-    username: 'larreadg@gmail.com',
-  }
-
   const plainPassword = process.env.ADMIN_PASSWORD || genPassword(16)
 
+  // Empresa (idempotente)
   console.log('> Empresa: buscar/crear...')
-  let empresa = await prisma.empresa.findFirst({ where: { ruc: EMPRESA.ruc } })
+  let empresa = await prisma.empresa.findFirst({
+    where: { OR: [{ ruc: EMPRESA.ruc }, { nombre: EMPRESA.nombre }] },
+  })
   if (!empresa) {
     empresa = await prisma.empresa.create({
       data: { ...EMPRESA, uc: 'seed', um: 'seed' },
@@ -83,6 +59,21 @@ async function main() {
     console.log(`  • Empresa ya existe: ${empresa.nombre} (id=${empresa.id})`)
   }
 
+  // Roles globales (upsert por nombre)
+  console.log('> Roles (globales): upsert por nombre...')
+  /** @type {Record<string, {id:string, nombre:string}>} */
+  const roles = {}
+  for (const nombre of ROLE_NAMES) {
+    const rol = await prisma.rol.upsert({
+      where: { nombre }, // requiere @@unique([nombre]) en Rol
+      update: { descripcion: nombre, um: 'seed' },
+      create: { nombre, descripcion: nombre, uc: 'seed', um: 'seed' },
+    })
+    roles[nombre] = { id: rol.id, nombre: rol.nombre }
+  }
+  console.log(`  ✓ Roles asegurados: ${ROLE_NAMES.join(', ')}`)
+
+  // Usuario admin (crear/asegurar rol TF_SYS_ADMIN)
   console.log('> Usuario admin: buscar/crear...')
   let usuario = await prisma.usuario.findFirst({
     where: {
@@ -90,10 +81,12 @@ async function main() {
       OR: [{ email: ADMIN.email }, { username: ADMIN.username }],
     },
   })
+
   if (!usuario) {
     usuario = await prisma.usuario.create({
       data: {
         empresaId: empresa.id,
+        rolId: roles['TF_SYS_ADMIN'].id, // asignar rol global
         departamentoId: null,
         sedeId: null,
         username: ADMIN.username,
@@ -114,89 +107,16 @@ async function main() {
     console.log(`  password:       ${plainPassword}`)
     console.log('  -------------------------------------------')
   } else {
-    console.log(`  • Usuario ya existe: ${usuario.username} (id=${usuario.id})`)
+    if (usuario.rolId !== roles['TF_SYS_ADMIN'].id) {
+      await prisma.usuario.update({
+        where: { id: usuario.id },
+        data: { rolId: roles['TF_SYS_ADMIN'].id, um: 'seed' },
+      })
+      console.log('  ✓ Rol del usuario actualizado a TF_SYS_ADMIN')
+    } else {
+      console.log('  • Usuario ya existe con rol TF_SYS_ADMIN')
+    }
   }
-
-  console.log('> Permisos: upsert catálogo (usa clave)...')
-  const permissions = [...basePermissions, ...compositePermissions]
-  for (const p of permissions) {
-    await prisma.permiso.upsert({
-      where: { clave: p.clave },            // ← tu modelo tiene @@unique([clave])
-      update: {
-        recurso: p.recurso,
-        accion: p.accion,
-        descripcion: p.descripcion,
-        um: 'seed',
-      },
-      create: {
-        clave: p.clave,
-        recurso: p.recurso,
-        accion: p.accion,
-        descripcion: p.descripcion,
-        uc: 'seed',
-        um: 'seed',
-      },
-    })
-  }
-  const allPerms = await prisma.permiso.findMany({ orderBy: { clave: 'asc' } })
-  console.log(`  ✓ Permisos asegurados: ${allPerms.length}`)
-
-  console.log('> Rol Admin: buscar/crear y vincular permisos...')
-  let rolAdmin = await prisma.rol.findFirst({
-    where: { empresaId: empresa.id, nombre: 'Admin' },
-  })
-  if (!rolAdmin) {
-    rolAdmin = await prisma.rol.create({
-      data: {
-        empresaId: empresa.id,
-        nombre: 'Admin',
-        descripcion: 'Acceso total',
-        uc: 'seed',
-        um: 'seed',
-      },
-    })
-    console.log(`  ✓ Rol Admin creado (id=${rolAdmin.id})`)
-  } else {
-    console.log(`  • Rol Admin ya existe (id=${rolAdmin.id})`)
-  }
-
-  // Vincular todos los permisos al rol Admin
-  const existingRP = await prisma.rolPermiso.findMany({
-    where: { rolId: rolAdmin.id },
-    select: { permisoId: true },
-  })
-  const existingPIds = new Set(existingRP.map(x => x.permisoId))
-  const missing = allPerms.filter(p => !existingPIds.has(p.id))
-
-  if (missing.length) {
-    await prisma.rolPermiso.createMany({
-      data: missing.map(p => ({
-        rolId: rolAdmin.id,
-        permisoId: p.id,
-        uc: 'seed',
-        um: 'seed',
-      })),
-      skipDuplicates: true,
-    })
-    console.log(`  ✓ Permisos agregados al rol Admin: +${missing.length}`)
-  } else {
-    console.log('  • Rol Admin ya tenía todos los permisos')
-  }
-
-  console.log('> Asignar rol Admin al usuario...')
-  await prisma.usuarioRol.createMany({
-    data: [{
-      usuarioId: usuario.id,
-      rolId: rolAdmin.id,
-      scopeSedeId: null,
-      scopeDepartamentoId: null,
-      scopeEquipoId: null,
-      uc: 'seed',
-      um: 'seed',
-    }],
-    skipDuplicates: true,
-  })
-  console.log('  ✓ Usuario tiene rol Admin')
 
   console.log('\nSeed finalizado ✅')
 }

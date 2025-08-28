@@ -34,9 +34,7 @@ model Empresa {
   // relaciones
   sedes         Sede[]
   departamentos Departamento[]
-  equipos       Equipo[]
   usuarios      Usuario[]
-  roles         Rol[]
 
   @@unique([nombre])
   @@map("Empresa")
@@ -60,9 +58,7 @@ model Sede {
   fm DateTime @updatedAt @db.Timestamptz(6) // fecha modificación
 
   empresa    Empresa      @relation(fields: [empresaId], references: [id], onDelete: Restrict)
-  equipos    Equipo[]
-  Usuario    Usuario[]
-  UsuarioRol UsuarioRol[]
+  usuarios   Usuario[]
 
   @@unique([empresaId, nombre])
   @@index([empresaId])
@@ -85,43 +81,12 @@ model Departamento {
   empresa    Empresa        @relation(fields: [empresaId], references: [id], onDelete: Restrict)
   parent     Departamento?  @relation("DepartamentoToDepartamento", fields: [parentId], references: [id], onDelete: SetNull)
   children   Departamento[] @relation("DepartamentoToDepartamento")
-  equipos    Equipo[]
   usuarios   Usuario[]
-  UsuarioRol UsuarioRol[]
 
   // Departamentos GLOBALes por empresa
   @@unique([empresaId, nombre])
   @@index([empresaId, parentId])
   @@map("Departamento")
-}
-
-model Equipo {
-  id             String  @id @default(uuid()) @db.Uuid
-  empresaId      String  @db.Uuid
-  sedeId         String  @db.Uuid
-  departamentoId String? @db.Uuid
-  nombre         String
-  codigo         String?
-  tipo           String? // (operativo, proyecto, capítulo, etc.)
-
-  // auditoría
-  uc String?
-  fc DateTime @default(now()) @db.Timestamptz(6)
-  um String?
-  fm DateTime @updatedAt @db.Timestamptz(6)
-
-  empresa      Empresa         @relation(fields: [empresaId], references: [id], onDelete: Restrict)
-  sede         Sede            @relation(fields: [sedeId], references: [id], onDelete: Restrict)
-  departamento Departamento?   @relation(fields: [departamentoId], references: [id], onDelete: SetNull)
-  miembros     UsuarioEquipo[]
-  UsuarioRol   UsuarioRol[]
-
-  // Equipos por sede (tu constraint): único por (empresa, sede, nombre)
-  @@unique([empresaId, sedeId, nombre])
-  @@index([empresaId])
-  @@index([sedeId])
-  @@index([departamentoId])
-  @@map("Equipo")
 }
 
 /**
@@ -133,6 +98,7 @@ model Equipo {
 model Usuario {
   id             String  @id @default(uuid()) @db.Uuid
   empresaId      String  @db.Uuid
+  rolId          String? @db.Uuid
   departamentoId String? @db.Uuid
   sedeId         String? @db.Uuid
 
@@ -143,6 +109,10 @@ model Usuario {
   apellido String?
   telefono String?
   activo   Boolean @default(true)
+  lastLogin DateTime? @db.Timestamptz(6)
+
+  token String? @default(uuid()) @db.Uuid
+  tokenExpiracion DateTime? @db.Timestamptz(6)
 
   // auditoría
   uc String?
@@ -151,11 +121,9 @@ model Usuario {
   fm DateTime @updatedAt @db.Timestamptz(6)
 
   empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  rol          Rol?          @relation(fields: [rolId], references: [id], onDelete: Restrict)
   departamento Departamento? @relation(fields: [departamentoId], references: [id], onDelete: SetNull)
   sede         Sede?         @relation(fields: [sedeId], references: [id], onDelete: SetNull)
-
-  roles   UsuarioRol[]
-  equipos UsuarioEquipo[]
 
   // Unicidad por empresa para username y email (multi-tenant)
   @@unique([empresaId, username])
@@ -163,12 +131,12 @@ model Usuario {
   @@index([empresaId])
   @@index([departamentoId])
   @@index([sedeId])
+  @@index([rolId])
   @@map("Usuario")
 }
 
 model Rol {
   id          String  @id @default(uuid()) @db.Uuid
-  empresaId   String  @db.Uuid
   nombre      String
   descripcion String?
 
@@ -178,109 +146,21 @@ model Rol {
   um String?
   fm DateTime @updatedAt @db.Timestamptz(6)
 
-  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  usuarios Usuario[]
 
-  permisos RolPermiso[]
-  usuarios UsuarioRol[]
-
-  @@unique([empresaId, nombre])
-  @@index([empresaId])
+  @@unique([nombre])
   @@map("Rol")
 }
 
-model Permiso {
-  id          String  @id @default(uuid()) @db.Uuid
-  clave       String // p.ej.: "user.read", "vacante.edit"
-  recurso     String?
-  accion      String?
-  descripcion String?
-
+model Captcha {
+  id         String   @id @default(uuid()) @db.Uuid
+  ip         String                                  // IP del cliente que solicitó el captcha
+  challenge  String                                  // identificador/valor del reto (p.ej. UUID o token)
+  
   // auditoría
-  uc String?
   fc DateTime @default(now()) @db.Timestamptz(6)
-  um String?
-  fm DateTime @updatedAt @db.Timestamptz(6)
 
-  roles RolPermiso[]
-
-  @@unique([clave])
-  @@map("Permiso")
-}
-
-// Asignación de rol a usuario, con scopes opcionales
-model UsuarioRol {
-  id                  String    @id @default(uuid()) @db.Uuid
-  usuarioId           String    @db.Uuid
-  rolId               String    @db.Uuid
-  scopeSedeId         String?   @db.Uuid
-  scopeDepartamentoId String?   @db.Uuid
-  scopeEquipoId       String?   @db.Uuid
-  validFrom           DateTime? @db.Timestamptz(6)
-  validTo             DateTime? @db.Timestamptz(6)
-  assignedBy          String?   @db.Uuid
-
-  // auditoría
-  uc String?
-  fc DateTime @default(now()) @db.Timestamptz(6)
-  um String?
-  fm DateTime @updatedAt @db.Timestamptz(6)
-
-  usuario     Usuario       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  rol         Rol           @relation(fields: [rolId], references: [id], onDelete: Cascade)
-  scopeSede   Sede?         @relation(fields: [scopeSedeId], references: [id], onDelete: SetNull)
-  scopeDepto  Departamento? @relation(fields: [scopeDepartamentoId], references: [id], onDelete: SetNull)
-  scopeEquipo Equipo?       @relation(fields: [scopeEquipoId], references: [id], onDelete: SetNull)
-
-  // Nota: este UNIQUE permite repetir el mismo rol con distintos scopes.
-  // (En Postgres, NULLs no colisionan; si quieres regla extra para "sin scope",
-  // se puede añadir un índice parcial vía SQL en una migración.)
-  @@unique([usuarioId, rolId, scopeSedeId, scopeDepartamentoId, scopeEquipoId])
-  @@index([usuarioId])
-  @@index([rolId])
-  @@index([scopeSedeId])
-  @@index([scopeDepartamentoId])
-  @@index([scopeEquipoId])
-  @@map("Usuario_Rol")
-}
-
-model RolPermiso {
-  id        String @id @default(uuid()) @db.Uuid
-  rolId     String @db.Uuid
-  permisoId String @db.Uuid
-
-  // auditoría
-  uc String?
-  fc DateTime @default(now()) @db.Timestamptz(6)
-  um String?
-  fm DateTime @updatedAt @db.Timestamptz(6)
-
-  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
-  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
-
-  @@unique([rolId, permisoId]) // (tu constraint)
-  @@index([permisoId])
-  @@map("Rol_Permiso")
-}
-
-model UsuarioEquipo {
-  id          String  @id @default(uuid()) @db.Uuid
-  usuarioId   String  @db.Uuid
-  equipoId    String  @db.Uuid
-  rolEnEquipo String?
-
-  validFrom DateTime? @db.Timestamptz(6)
-  validTo   DateTime? @db.Timestamptz(6)
-
-  // auditoría
-  uc String?
-  fc DateTime @default(now()) @db.Timestamptz(6)
-  um String?
-  fm DateTime @updatedAt @db.Timestamptz(6)
-
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  equipo  Equipo  @relation(fields: [equipoId], references: [id], onDelete: Cascade)
-
-  @@unique([usuarioId, equipoId]) // (tu constraint)
-  @@index([equipoId])
-  @@map("Usuario_Equipo")
+  @@unique([challenge, ip])
+  @@index([ip])
+  @@map("Captcha")
 }

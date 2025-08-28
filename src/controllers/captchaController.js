@@ -1,19 +1,17 @@
-// src/controllers/rolController.js
 import { validationResult } from 'express-validator'
-import { RolService } from '../services/rolService.js'
+import { CaptchaService } from '../services/captchaService.js'
 import { TalentFlowError } from '../utils/error.js'
 import { Response } from '../utils/response.js'
 
 /** @typedef {import('express').Request} Request */
 /** @typedef {import('express').Response} ExpressResponse */
-/** @typedef {import('@prisma/client').Rol} Rol */
 
 /**
- * Lista roles
+ * Lista empresas con paginación/búsqueda/ordenamiento.
  *
- * @param {Request} req - Express request (usa `req.params.empresaId` y `req.query`).
- * @param {ExpressResponse} res - Express response.
- * @returns {Promise<void>}
+ * @param {Request} req - Request de Express (usa query: page, pageSize, q, orderBy, order).
+ * @param {ExpressResponse} res - Response de Express.
+ * @returns {Promise<unknown>}
  */
 async function get(req, res) {
   try {
@@ -22,10 +20,10 @@ async function get(req, res) {
       return res.status(400).send(new Response('error', 400, null, errors.array()))
     }
 
-    const result = await RolService.get()
-    return res
-      .status(200)
-      .send(new Response('success', 200, result, 'Roles listados correctamente'))
+    const captcha = await CaptchaService.generarCaptcha({ ip: req.ip })
+    res.type('svg')
+    res.status(200).send(captcha)
+
   } catch (e) {
     if (e instanceof TalentFlowError) {
       return res.status(e.code).send(new Response('error', e.code, null, e.message))
@@ -34,6 +32,7 @@ async function get(req, res) {
   }
 }
 
-export const RolController = {
-  get
+export const CaptchaController = {
+    get,
 }
+  

@@ -1,8 +1,15 @@
 // src/services/usuarioService.js
 import { prisma } from '../prismaClient.js'
 import { getCurrentUser } from '../middlewares/requestContext.js'
-import { mapPrismaError } from '../utils/error.js'
-import { pick } from '../utils/utils.js'
+import { mapPrismaError, TalentFlowError } from '../utils/error.js'
+import { appName, hasRol, pick, TF_ADMINS } from '../utils/utils.js'
+import { enviarCorreo } from './emailService.js'
+import { readFile } from 'node:fs/promises'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js'
+import timezone from 'dayjs/plugin/timezone.js'
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 /** @typedef {import('@prisma/client').Usuario} Usuario */
 /** @typedef {import('@prisma/client').Rol} Rol */
@@ -13,12 +20,11 @@ import { pick } from '../utils/utils.js'
 
 /** Campos permitidos para actualizar Usuario */
 const ALLOWED_FIELDS = [
-  'empresaId',
-  'departamentoId',
-  'sedeId',
   'nombre',
   'apellido',
   'telefono',
+  'rolId',
+  'activo'
 ]
 
 /**
@@ -72,72 +78,32 @@ async function getByEmpresa(
         orderBy: { [safeOrder]: direction },
         skip,
         take,
+        select: {
+          id: true,
+          nombre: true,
+          apellido: true,
+          email: true,
+          activo: true,
+          lastLogin: true,
+          telefono: true,
+          rol: { select: { nombre: true } },
+          empresa: { select: { nombre: true } },
+          rolId: true,
+          empresaId: true
+        }
       }),
       prisma.usuario.count({ where }),
     ])
 
-    return {
-      data,
-      meta: {
-        page: Number(page),
-        pageSize: Number(pageSize),
-        total,
-        totalPages: Math.max(1, Math.ceil(total / take)),
-      },
-    }
-  } catch (e) {
-    throw mapPrismaError(e, { resource: 'Usuario' })
-  }
-}
-
-/**
- * Lista usuarios de un departamento con paginación, búsqueda y ordenamiento.
- *
- * @param {string} departamentoId - ID del departamento (UUID).
- * @param {Object} [params={}] Parámetros de consulta (page, pageSize, q, orderBy, order, activo, sedeId).
- * @returns {Promise<{data: Usuario[], meta: {page: number, pageSize: number, total: number, totalPages: number}}>}
- * @throws {TalentFlowError}
- */
-async function getByDepartamento(
-  departamentoId,
-  { page = 1, pageSize = 25, q, orderBy = 'username', order = 'asc', activo, sedeId } = {}
-) {
-  try {
-    const skip = Math.max(0, (Number(page) - 1) * Number(pageSize))
-    const take = Math.max(1, Number(pageSize))
-
-    const where = {
-      departamentoId,
-      ...(typeof activo === 'boolean' ? { activo } : null),
-      ...(sedeId ? { sedeId } : null),
-      ...(q
-        ? {
-            OR: [
-              { username: { contains: q, mode: 'insensitive' } },
-              { email: { contains: q, mode: 'insensitive' } },
-              { nombre: { contains: q, mode: 'insensitive' } },
-              { apellido: { contains: q, mode: 'insensitive' } },
-              { telefono: { contains: q, mode: 'insensitive' } },
-            ],
-          }
-        : null),
-    }
-
-    const safeOrder = ['username', 'email', 'nombre', 'apellido', 'fc', 'fm'].includes(orderBy) ? orderBy : 'username'
-    const direction = order?.toLowerCase() === 'desc' ? 'desc' : 'asc'
-
-    const [data, total] = await Promise.all([
-      prisma.usuario.findMany({
-        where,
-        orderBy: { [safeOrder]: direction },
-        skip,
-        take,
-      }),
-      prisma.usuario.count({ where }),
-    ])
+    const dataFormatted = data.map(u => ({
+      ...u,
+      lastLogin: u.lastLogin
+        ? dayjs(u.lastLogin).tz(process.env.APP_TZ).format('YYYY-MM-DD HH:mm:ss')
+        : null,
+    }))
 
     return {
-      data,
+      data: dataFormatted,
       meta: {
         page: Number(page),
         pageSize: Number(pageSize),
@@ -162,145 +128,6 @@ async function getById(id) {
     const item = await prisma.usuario.findUnique({ where: { id } })
     if (!item) throw mapPrismaError({ code: 'P2025' }, { resource: 'Usuario' })
     return item
-  } catch (e) {
-    throw mapPrismaError(e, { resource: 'Usuario' })
-  }
-}
-
-/**
- * Agrega y/o quita **roles** a un usuario.
- * Usa la tabla de unión `Usuario_Rol` (modelo Prisma: UsuarioRol).
- *
- * Reglas:
- * - `add`: array de objetos con `{ rolId, scopeSedeId?, scopeDepartamentoId?, scopeEquipoId?, validFrom?, validTo? }`
- * - `remove`: array que puede ser:
- *    - string[] → IDs de `rolId` (elimina todas las filas de ese rol para el usuario)
- *    - objetos `{ rolId, scopeSedeId?, scopeDepartamentoId?, scopeEquipoId? }` para borrar selectivo por scope
- *
- * @param {string} usuarioId - ID del usuario (UUID).
- * @param {{ add?: Array<{rolId: string, scopeSedeId?: string, scopeDepartamentoId?: string, scopeEquipoId?: string, validFrom?: Date|string, validTo?: Date|string}>, remove?: Array<string|{rolId: string, scopeSedeId?: string, scopeDepartamentoId?: string, scopeEquipoId?: string}> }} payload
- * @returns {Promise<{ added: number, removed: number, roles: (UsuarioRol & { rol: Rol })[] }>}
- * @throws {TalentFlowError}
- */
-async function patchRoles(usuarioId, { add = [], remove = [] } = {}) {
-  try {
-    const currentUser = getCurrentUser()
-
-    const tx = []
-
-    // ADD
-    if (Array.isArray(add) && add.length) {
-      tx.push(
-        prisma.usuarioRol.createMany({
-          data: add.map((r) => ({
-            usuarioId,
-            rolId: r.rolId,
-            scopeSedeId: r.scopeSedeId ?? null,
-            scopeDepartamentoId: r.scopeDepartamentoId ?? null,
-            scopeEquipoId: r.scopeEquipoId ?? null,
-            validFrom: r.validFrom ?? null,
-            validTo: r.validTo ?? null,
-            uc: currentUser.id,
-            um: currentUser.id,
-          })),
-          skipDuplicates: true,
-        })
-      )
-    } else {
-      tx.push(Promise.resolve({ count: 0 }))
-    }
-
-    // REMOVE
-    if (Array.isArray(remove) && remove.length) {
-      const deleteOR = remove.map((item) => {
-        if (typeof item === 'string') {
-          // elimina TODAS las asignaciones del rol indicado
-          return { AND: [{ usuarioId }, { rolId: item }] }
-        }
-        // elimina por combinación específica de rol + scopes provistos
-        const cond = [{ usuarioId }, { rolId: item.rolId }]
-        if (item.scopeSedeId !== undefined) cond.push({ scopeSedeId: item.scopeSedeId })
-        if (item.scopeDepartamentoId !== undefined) cond.push({ scopeDepartamentoId: item.scopeDepartamentoId })
-        if (item.scopeEquipoId !== undefined) cond.push({ scopeEquipoId: item.scopeEquipoId })
-        return { AND: cond }
-      })
-
-      tx.push(prisma.usuarioRol.deleteMany({ where: { OR: deleteOR } }))
-    } else {
-      tx.push(Promise.resolve({ count: 0 }))
-    }
-
-    const [createRes, deleteRes] = await prisma.$transaction(tx)
-
-    // Lista actual de roles del usuario (con el rol incluido)
-    const roles = await prisma.usuarioRol.findMany({
-      where: { usuarioId },
-      include: { rol: true },
-      orderBy: [{ rol: { nombre: 'asc' } }],
-    })
-
-    return { added: createRes?.count ?? 0, removed: deleteRes?.count ?? 0, roles }
-  } catch (e) {
-    throw mapPrismaError(e, { resource: 'Usuario' })
-  }
-}
-
-/**
- * Agrega y/o quita **equipos** a un usuario.
- * Usa la tabla de unión `Usuario_Equipo` (modelo Prisma: UsuarioEquipo).
- *
- * Reglas:
- * - `add`: array de objetos `{ equipoId, rolEnEquipo?, validFrom?, validTo? }`
- * - `remove`: array de `equipoId` (string) a desvincular
- *
- * @param {string} usuarioId - ID del usuario (UUID).
- * @param {{ add?: Array<{equipoId: string, rolEnEquipo?: string, validFrom?: Date|string, validTo?: Date|string}>, remove?: string[] }} payload
- * @returns {Promise<{ added: number, removed: number, equipos: (UsuarioEquipo & { equipo: Equipo })[] }>}
- * @throws {TalentFlowError}
- */
-async function patchEquipos(usuarioId, { add = [], remove = [] } = {}) {
-  try {
-    const currentUser = getCurrentUser()
-
-    const tx = []
-
-    // ADD
-    if (Array.isArray(add) && add.length) {
-      tx.push(
-        prisma.usuarioEquipo.createMany({
-          data: add.map((e) => ({
-            usuarioId,
-            equipoId: e.equipoId,
-            rolEnEquipo: e.rolEnEquipo ?? null,
-            validFrom: e.validFrom ?? null,
-            validTo: e.validTo ?? null,
-            uc: currentUser.id,
-            um: currentUser.id,
-          })),
-          skipDuplicates: true,
-        })
-      )
-    } else {
-      tx.push(Promise.resolve({ count: 0 }))
-    }
-
-    // REMOVE
-    if (Array.isArray(remove) && remove.length) {
-      tx.push(prisma.usuarioEquipo.deleteMany({ where: { usuarioId, equipoId: { in: remove } } }))
-    } else {
-      tx.push(Promise.resolve({ count: 0 }))
-    }
-
-    const [createRes, deleteRes] = await prisma.$transaction(tx)
-
-    // Lista actual de equipos del usuario (con información del equipo)
-    const equipos = await prisma.usuarioEquipo.findMany({
-      where: { usuarioId },
-      include: { equipo: true },
-      orderBy: [{ equipo: { nombre: 'asc' } }],
-    })
-
-    return { added: createRes?.count ?? 0, removed: deleteRes?.count ?? 0, equipos }
   } catch (e) {
     throw mapPrismaError(e, { resource: 'Usuario' })
   }
@@ -353,13 +180,85 @@ async function remove(id) {
   }
 }
 
+/**
+ * Lista usuarios de la **empresa del usuario autenticado** con paginación, búsqueda y ordenamiento.
+ *
+ * No recibe `empresaId` porque se obtiene de `getCurrentUser()`.
+ *
+ * @param {Object} [params={}]
+ * @param {number} [params.page=1]
+ * @param {number} [params.pageSize=25]
+ * @param {string} [params.q] Busca en username, email, nombre, apellido, telefono
+ * @param {'username'|'email'|'nombre'|'apellido'|'fc'|'fm'} [params.orderBy='username']
+ * @param {'asc'|'desc'} [params.order='asc']
+ * @param {boolean} [params.activo]
+ * @param {string} [params.sedeId]
+ * @param {string} [params.departamentoId]
+ * @returns {Promise<{data: Usuario[], meta: {page: number, pageSize: number, total: number, totalPages: number}}>}
+ * @throws {TalentFlowError} 401 si no hay usuario en contexto; 403 si no tiene empresa asociada.
+ */
+async function get(params = {}) {
+  try {
+    const currentUser = getCurrentUser()
+    return await getByEmpresa(currentUser.empresaId, params)
+  } catch (e) {
+    throw mapPrismaError(e, { resource: 'Usuario' })
+  }
+}
+
+/**
+ * Guardar un usuario
+ *
+ * @param {Object} input
+ * @param {string} input.email
+ * @param {string} input.nombre
+ * @param {string} input.apellido
+ * @param {string} input.telefono
+ * @param {string} input.rolId
+ * @param {string} [input.empresaId]
+ * @returns {Promise<Partial<Usuario>>}
+ * @throws {TalentFlowError} 401 si no hay usuario en contexto; 403 si no tiene empresa asociada.
+ */
+async function post({ email, nombre, apellido, telefono, rolId, empresaId }) {
+  try {
+    const currentUser = getCurrentUser()
+    const created = await prisma.usuario.create({
+      data: {
+        empresaId: empresaId || currentUser.empresaId,
+        departamentoId: null,
+        sedeId: null,
+        username: email,
+        email: email,
+        password: 'unset',
+        nombre: nombre,
+        apellido: apellido,
+        telefono: telefono,
+        activo: false,
+        uc: currentUser.id,
+        um: currentUser.id,
+        tokenExpiracion: new Date(Date.now() + 60 * 60 * 1000),
+        rolId
+      },
+    })
+
+    const fileUrl = new URL('../resources/templateEmailCrearCuenta.html', import.meta.url)
+    let emailTemplate = await readFile(fileUrl, 'utf8')
+    emailTemplate = emailTemplate.replace(/\$nombre/g, created.nombre)
+    emailTemplate = emailTemplate.replace(/\$apellido/g, created.apellido)
+    emailTemplate = emailTemplate.replace(/\$activation_url/g, `${process.env.APP_FROM}/#/auth/activate-account?token=${created.token}`)
+
+    await enviarCorreo({ to: created.email, html: emailTemplate, subject: `${appName} - Activación de cuenta` })
+
+  } catch (e) {
+    throw mapPrismaError(e, { resource: 'Usuario' })
+  }
+}
+
 export const UsuarioService = {
-  getByEmpresa,
-  getByDepartamento,
+  get,
   getById,
-  patchRoles,
-  patchEquipos,
   patch,
   delete: remove,
   remove,
+  post
 }

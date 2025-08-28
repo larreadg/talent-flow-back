@@ -1,9 +1,11 @@
 import { prisma } from '../prismaClient.js'
-import { getCurrentUser } from '../middlewares/requestContext.js'
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
 import { mapPrismaError, TalentFlowError } from '../utils/error.js'
 import { pick } from '../utils/utils.js'
 import jwt from 'jsonwebtoken'
+import { getCurrentUser } from '../middlewares/requestContext.js'
+import dayjs from 'dayjs'
+import { verifyCaptcha } from '../utils/captcha.js'
 
 /** @typedef {import('@prisma/client').Usuario} Usuario */
 
@@ -30,6 +32,22 @@ function hashPassword(plain) {
     p: SCRYPT_PARAMS.p,
   })
   return `scrypt$${SCRYPT_PARAMS.N}$${SCRYPT_PARAMS.r}$${SCRYPT_PARAMS.p}$${salt.toString('hex')}$${buf.toString('hex')}`
+}
+
+/**
+ * Valida la política de contraseña:
+ * - Mínimo 8 caracteres
+ * - Al menos 1 número
+ * - Al menos 1 símbolo
+ * @param {string} pass
+ * @returns {string[]} array de errores (vacío si cumple)
+ */
+function validatePasswordPolicy(pass) {
+  const errs = []
+  if (typeof pass !== 'string' || pass.length < 8) errs.push('La contraseña debe tener al menos 8 caracteres')
+  if (!/[0-9]/.test(pass)) errs.push('La contraseña debe incluir al menos un número')
+  if (!/[^\w\s]/.test(pass)) errs.push('La contraseña debe incluir al menos un símbolo')
+  return errs
 }
 
 /**
@@ -61,73 +79,19 @@ function verifyPassword(stored, plain) {
 
 const VISIBLE_USER_FIELDS = [
   'id',
-  'empresaId',
-  'departamentoId',
-  'sedeId',
-  'username',
   'email',
   'nombre',
   'apellido',
   'telefono',
   'activo',
-  'fc',
-  'fm',
+  'empresa',
+  'rol',
+  'rolId'
 ]
 
 /* =========================================
  * Servicios de autenticación
  * ========================================= */
-
-/**
- * Crea un usuario con password hasheado.
- * Requiere: empresaId, username, email, password, nombre, apellido, telefono
- * Opcionales: departamentoId, sedeId
- * Auditoría: uc/um se setean con `getCurrentUser()` si existe.
- *
- * @param {Partial<Usuario> & { password: string }} input
- * @returns {Promise<Pick<Usuario, typeof VISIBLE_USER_FIELDS[number]>>}
- */
-async function registerUsuario(input) {
-  try {
-    const required = ['empresaId', 'username', 'email', 'password', 'nombre', 'apellido', 'telefono']
-    for (const k of required) {
-      if (!input?.[k]) {
-        throw new TalentFlowError(`Falta el campo requerido: ${k}`, 400)
-      }
-    }
-
-    const current = (() => {
-      try {
-        return getCurrentUser()
-      } catch {
-        return null
-      }
-    })()
-
-    const hashed = hashPassword(input.password)
-
-    const created = await prisma.usuario.create({
-      data: {
-        empresaId: input.empresaId,
-        departamentoId: input.departamentoId ?? null,
-        sedeId: input.sedeId ?? null,
-        username: input.username,
-        email: input.email,
-        password: hashed,
-        nombre: input.nombre,
-        apellido: input.apellido,
-        telefono: input.telefono,
-        activo: true,
-        uc: current?.id ?? 'system',
-        um: current?.id ?? 'system',
-      },
-    })
-
-    return pick(created, VISIBLE_USER_FIELDS)
-  } catch (e) {
-    throw mapPrismaError(e, { resource: 'Usuario' })
-  }
-}
 
 /**
  * Login por username o email + password.
@@ -140,23 +104,19 @@ async function registerUsuario(input) {
  *   permisos: [{ id, nombre, codigo }]
  * }
  *
- * @param {{ username?: string, email?: string, password: string }} input
+ * @param {{ email: string, password: string, ip: string, captcha: string }} input
  * @returns {Promise<{ token: string, user: Pick<Usuario, typeof VISIBLE_USER_FIELDS[number]> }>}
  */
-async function login(input) {
+async function login({ email, password, ip, captcha }) {
   try {
-    const { username, email, password } = input || {}
-    if ((!username && !email) || !password) {
-      throw new TalentFlowError('Credenciales incompletas', 400)
-    }
 
-    // Buscar por username o email
+    await verifyCaptcha({ ip, challenge: captcha })
+
     const user = await prisma.usuario.findFirst({
-      where: {
-        OR: [
-          ...(username ? [{ username }] : []),
-          ...(email ? [{ email }] : []),
-        ],
+      where: { email },
+      include: {
+        empresa: { select: { nombre: true } }, // ← añadimos el nombre de la empresa
+        rol: { select: { nombre: true } }
       },
     })
 
@@ -164,7 +124,7 @@ async function login(input) {
       throw new TalentFlowError('Usuario o contraseña inválidos', 401)
     }
     if (!user.activo) {
-      throw new TalentFlowError('Usuario inactivo', 403)
+      throw new TalentFlowError('Usuario inactivo', 401)
     }
 
     // Verificar password
@@ -173,34 +133,10 @@ async function login(input) {
       throw new TalentFlowError('Usuario o contraseña inválidos', 401)
     }
 
-    // Roles del usuario (con nombre)
-    const usuarioRoles = await prisma.usuarioRol.findMany({
-      where: { usuarioId: user.id },
-      include: { rol: true },
-      orderBy: [{ rol: { nombre: 'asc' } }],
+    await prisma.usuario.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date(), um: user.id }
     })
-    const roles = usuarioRoles
-      .filter(ur => !!ur.rol)
-      .map(ur => ({ id: ur.rol.id, nombre: ur.rol.nombre }))
-
-    // Permisos por roles
-    const rolIds = [...new Set(usuarioRoles.map(ur => ur.rolId))]
-    let permisos = []
-    if (rolIds.length) {
-      const rolPermisos = await prisma.rolPermiso.findMany({
-        where: { rolId: { in: rolIds } },
-        include: { permiso: true },
-      })
-      // Deduplicar por id
-      const seen = new Set()
-      for (const rp of rolPermisos) {
-        const p = rp.permiso
-        if (p && !seen.has(p.id)) {
-          seen.add(p.id)
-          permisos.push({ id: p.id, clave: p.clave, descripcion: p.descripcion })
-        }
-      }
-    }
 
     // Firmar JWT
     const secret = process.env.JWT_SECRET
@@ -208,11 +144,11 @@ async function login(input) {
 
     const payload = {
       sub: user.id,
+      id: user.id,
       username: user.username,
       email: user.email,
       empresaId: user.empresaId,
-      roles,
-      permisos,
+      rol: user.rol.nombre
     }
 
     const token = jwt.sign(payload, secret, {
@@ -227,7 +163,64 @@ async function login(input) {
   }
 }
 
+/**
+ * Actualiza la contraseña del usuario autenticado.
+ *
+ * Reglas:
+ * - `pass` y `repeatPass` deben coincidir.
+ * - Debe cumplir política (>=8, número, símbolo).
+ * - No puede ser igual a la contraseña actual.
+ * - Usuario debe estar activo.
+ *
+ * Efectos:
+ * - Setea `password` (hash scrypt) y `um` con el usuario actual.
+ *
+ * @param {{ pass: string, repeatPass: string }} params
+ * @returns {Promise<{ ok: true }>}
+ * @throws {TalentFlowError} 401 si no autenticado; 403 si inactivo; 400 si política/confirmación falla.
+ */
+async function updatePass({ pass, repeatPass }) {
+  try {
+    const currentUser = getCurrentUser()
+    if (!currentUser?.id) throw new TalentFlowError('No autenticado', 401)
+
+    // Confirmación
+    if (!pass || !repeatPass || pass !== repeatPass) {
+      throw new TalentFlowError('Las contraseñas no coinciden', 400)
+    }
+
+    // Política
+    const policyErrors = validatePasswordPolicy(pass)
+    if (policyErrors.length) {
+      throw new TalentFlowError(policyErrors.join('. '), 400)
+    }
+
+    // Usuario
+    const user = await prisma.usuario.findUnique({ where: { id: currentUser.id } })
+    if (!user) throw new TalentFlowError('Usuario no encontrado', 404)
+    if (!user.activo) throw new TalentFlowError('Usuario inactivo', 403)
+
+    // Evitar reutilizar la misma contraseña
+    if (user.password && verifyPassword(user.password, pass)) {
+      throw new TalentFlowError('La nueva contraseña no puede ser igual a la anterior', 400)
+    }
+
+    // Hash + update
+    const pw = hashPassword(pass)
+    await prisma.usuario.update({
+      where: { id: currentUser.id },
+      data: { password: pw, um: currentUser.id },
+    })
+
+    return { ok: true }
+
+  } catch (e) {
+    if (e instanceof TalentFlowError) throw e
+    throw mapPrismaError(e, { resource: 'Usuario' })
+  }
+}
+
 export const AuthService = {
-  registerUsuario,
   login,
+  updatePass
 }

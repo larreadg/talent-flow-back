@@ -149,74 +149,6 @@ async function patch(req, res) {
 }
 
 /**
- * Agrega y/o quita roles a un usuario. Permite scopes opcionales.
- *
- * Path param:
- * - id: string (UUID) → usuarioId
- *
- * Body:
- * - add?: Array<{ rolId: string, scopeSedeId?: string, scopeDepartamentoId?: string, scopeEquipoId?: string, validFrom?: Date|string, validTo?: Date|string }>
- * - remove?: Array<string | { rolId: string, scopeSedeId?: string, scopeDepartamentoId?: string, scopeEquipoId?: string }>
- *
- * @param {Request} req
- * @param {ExpressResponse} res
- * @returns {Promise<void>}
- */
-async function patchRoles(req, res) {
-  try {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).send(new Response('error', 400, null, errors.array()))
-    }
-
-    const { add, remove } = req.body ?? {}
-    const result = await UsuarioService.patchRoles(req.params.id, { add, remove })
-    return res
-      .status(200)
-      .send(new Response('success', 200, result, 'Roles del usuario actualizados correctamente'))
-  } catch (e) {
-    if (e instanceof TalentFlowError) {
-      return res.status(e.code).send(new Response('error', e.code, null, e.message))
-    }
-    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
-  }
-}
-
-/**
- * Agrega y/o quita equipos a un usuario.
- *
- * Path param:
- * - id: string (UUID) → usuarioId
- *
- * Body:
- * - add?: Array<{ equipoId: string, rolEnEquipo?: string, validFrom?: Date|string, validTo?: Date|string }>
- * - remove?: string[]  → IDs de equipo a desvincular
- *
- * @param {Request} req
- * @param {ExpressResponse} res
- * @returns {Promise<void>}
- */
-async function patchEquipos(req, res) {
-  try {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).send(new Response('error', 400, null, errors.array()))
-    }
-
-    const { add, remove } = req.body ?? {}
-    const result = await UsuarioService.patchEquipos(req.params.id, { add, remove })
-    return res
-      .status(200)
-      .send(new Response('success', 200, result, 'Equipos del usuario actualizados correctamente'))
-  } catch (e) {
-    if (e instanceof TalentFlowError) {
-      return res.status(e.code).send(new Response('error', e.code, null, e.message))
-    }
-    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
-  }
-}
-
-/**
  * Desactiva (soft delete) un usuario por ID (`activo=false`).
  *
  * @param {Request} req
@@ -243,15 +175,63 @@ async function remove(req, res) {
 }
 
 /**
- * Objeto agrupador para importar un único controlador:
- * `import { UsuarioController } from '../controllers/usuarioController.js'`
+ * Obtiene usuarios por la empresa del usuario logueado
+ *
+ * @param {Request} req
+ * @param {ExpressResponse} res
+ * @returns {Promise<void>}
  */
+async function get(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+
+    const result = await UsuarioService.get(req.query)
+    return res
+      .status(200)
+      .send(new Response('success', 200, result, 'Usuarios listados correctamente'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
+
+/**
+ * Crear un usuario inactivo
+ *
+ * @param {Request} req
+ * @param {ExpressResponse} res
+ * @returns {Promise<void>}
+ */
+async function post(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+
+    await UsuarioService.post(req.body)
+    return res
+      .status(200)
+      .send(new Response('success', 201, null, 'Usuario creado'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
+
 export const UsuarioController = {
   getByEmpresa,
   getByDepartamento,
+  get,
   getById,
   patch,
-  patchRoles,
-  patchEquipos,
   delete: remove,
+  post
 }
