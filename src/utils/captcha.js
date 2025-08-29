@@ -4,7 +4,7 @@ import { prisma } from '../prismaClient.js'
 
 const CAPTCHA_TTL_MIN = 5
 
-export async function verifyCaptcha({ ip, challenge }) {
+export async function verifyCaptcha({ ip, challenge, from = 'login' }) {
   const cutoff = dayjs().subtract(CAPTCHA_TTL_MIN, 'minute').toDate()
 
   // Borra SOLO si coincide ip+challenge y no está vencido (fc >= cutoff).
@@ -17,7 +17,7 @@ export async function verifyCaptcha({ ip, challenge }) {
   })
 
   if (count === 0) {
-    throw new TalentFlowError('Captcha inválida o vencida', 401)
+    throw new TalentFlowError('Captcha inválida o vencida', from === 'login' ? 401 : 400)
   }
 
   return { ok: true }

@@ -1,75 +1,52 @@
 import { prisma } from '../prismaClient.js'
-import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
+
 import { mapPrismaError, TalentFlowError } from '../utils/error.js'
-import { pick } from '../utils/utils.js'
-import jwt from 'jsonwebtoken'
-import { getCurrentUser } from '../middlewares/requestContext.js'
-import dayjs from 'dayjs'
+import { appName, pick, validatePasswordPolicy, verifyPassword } from '../utils/utils.js'
 import { verifyCaptcha } from '../utils/captcha.js'
+import { readFile } from 'node:fs/promises'
+import jwt from 'jsonwebtoken'
+import dayjs from 'dayjs'
+import { enviarCorreo } from './emailService.js'
 
 /** @typedef {import('@prisma/client').Usuario} Usuario */
 
-/* =========================================
- * Password hashing helpers (scrypt + salt)
- * ========================================= */
-
-const SCRYPT_PARAMS = { N: 16384, r: 8, p: 1, keylen: 32 }
-
 /**
- * Genera un hash scrypt con salt embebido.
- * Formato almacenado: scrypt$N$r$p$<hexSalt>$<hexHash>
- * @param {string} plain
- * @returns {string}
+ * Verifica un token válido y NO vencido y lo CONSUME (borra).
+ * Operación atómica (transacción) para evitar reuso/race conditions.
+ *
+ * @param {{ token: string, tipo: 'activate_account' | 'update_pass' }} input
+ * @returns {Promise<{ usuarioId: string }>}
+ * @throws {TalentFlowError} 400 si inválido o vencido
  */
-function hashPassword(plain) {
-  if (!plain || typeof plain !== 'string') {
-    throw new TalentFlowError('Password inválido', 400)
-  }
-  const salt = randomBytes(16)
-  const buf = scryptSync(plain, salt, SCRYPT_PARAMS.keylen, {
-    N: SCRYPT_PARAMS.N,
-    r: SCRYPT_PARAMS.r,
-    p: SCRYPT_PARAMS.p,
-  })
-  return `scrypt$${SCRYPT_PARAMS.N}$${SCRYPT_PARAMS.r}$${SCRYPT_PARAMS.p}$${salt.toString('hex')}$${buf.toString('hex')}`
-}
-
-/**
- * Valida la política de contraseña:
- * - Mínimo 8 caracteres
- * - Al menos 1 número
- * - Al menos 1 símbolo
- * @param {string} pass
- * @returns {string[]} array de errores (vacío si cumple)
- */
-function validatePasswordPolicy(pass) {
-  const errs = []
-  if (typeof pass !== 'string' || pass.length < 8) errs.push('La contraseña debe tener al menos 8 caracteres')
-  if (!/[0-9]/.test(pass)) errs.push('La contraseña debe incluir al menos un número')
-  if (!/[^\w\s]/.test(pass)) errs.push('La contraseña debe incluir al menos un símbolo')
-  return errs
-}
-
-/**
- * Verifica un password contra el hash almacenado.
- * @param {string} stored
- * @param {string} plain
- * @returns {boolean}
- */
-function verifyPassword(stored, plain) {
+export async function verifyAndConsumeUsuarioToken({ token, tipo }) {
   try {
-    const [scheme, N, r, p, saltHex, hashHex] = String(stored).split('$')
-    if (scheme !== 'scrypt') return false
-    const salt = Buffer.from(saltHex, 'hex')
-    const expected = Buffer.from(hashHex, 'hex')
-    const got = scryptSync(plain, salt, expected.length, {
-      N: Number(N),
-      r: Number(r),
-      p: Number(p),
+    const now = new Date()
+
+    return await prisma.$transaction(async (tx) => {
+      // 1) Buscar el token vigente y obtener usuarioId
+      console.log(token)
+      const rec = await tx.usuarioToken.findFirst({
+        where: { id: token, tipo, expiresAt: { gte: now } },
+        select: { id: true, usuarioId: true },
+      })
+      if (!rec) {
+        throw new TalentFlowError('Token inválido o vencido', 400)
+      }
+
+      // 2) Consumir (one-time): borrar ese token
+      const { count } = await tx.usuarioToken.deleteMany({
+        where: { id: rec.id, tipo },
+      })
+      if (count === 0) {
+        // otro proceso lo consumió entre (1) y (2)
+        throw new TalentFlowError('Token inválido o vencido', 400)
+      }
+
+      return { usuarioId: rec.usuarioId }
     })
-    return timingSafeEqual(expected, got)
-  } catch {
-    return false
+  } catch (e) {
+    if (e instanceof TalentFlowError) throw e
+    throw mapPrismaError(e, { resource: 'UsuarioToken' })
   }
 }
 
@@ -164,7 +141,7 @@ async function login({ email, password, ip, captcha }) {
 }
 
 /**
- * Actualiza la contraseña del usuario autenticado.
+ * Activa un usuario y setea su password
  *
  * Reglas:
  * - `pass` y `repeatPass` deben coincidir.
@@ -175,15 +152,13 @@ async function login({ email, password, ip, captcha }) {
  * Efectos:
  * - Setea `password` (hash scrypt) y `um` con el usuario actual.
  *
- * @param {{ pass: string, repeatPass: string }} params
+ * @param {{ pass: string, repeatPass: string, captcha: string, token: string, ip: string }} params
  * @returns {Promise<{ ok: true }>}
  * @throws {TalentFlowError} 401 si no autenticado; 403 si inactivo; 400 si política/confirmación falla.
  */
-async function updatePass({ pass, repeatPass }) {
+async function activateAccount({ pass, repeatPass, captcha, token, ip }) {
   try {
-    const currentUser = getCurrentUser()
-    if (!currentUser?.id) throw new TalentFlowError('No autenticado', 401)
-
+    
     // Confirmación
     if (!pass || !repeatPass || pass !== repeatPass) {
       throw new TalentFlowError('Las contraseñas no coinciden', 400)
@@ -194,22 +169,108 @@ async function updatePass({ pass, repeatPass }) {
     if (policyErrors.length) {
       throw new TalentFlowError(policyErrors.join('. '), 400)
     }
+    
+    await verifyCaptcha({ ip, challenge: captcha, from: 'activate_account' })
 
-    // Usuario
-    const user = await prisma.usuario.findUnique({ where: { id: currentUser.id } })
-    if (!user) throw new TalentFlowError('Usuario no encontrado', 404)
-    if (!user.activo) throw new TalentFlowError('Usuario inactivo', 403)
-
-    // Evitar reutilizar la misma contraseña
-    if (user.password && verifyPassword(user.password, pass)) {
-      throw new TalentFlowError('La nueva contraseña no puede ser igual a la anterior', 400)
-    }
+    const { usuarioId } = await verifyAndConsumeUsuarioToken({ token, tipo: 'activate_account' })
 
     // Hash + update
     const pw = hashPassword(pass)
     await prisma.usuario.update({
-      where: { id: currentUser.id },
-      data: { password: pw, um: currentUser.id },
+      where: { id: usuarioId },
+      data: { password: pw, um: usuarioId, activo: true },
+    })
+
+    return { ok: true }
+
+  } catch (e) {
+    if (e instanceof TalentFlowError) throw e
+    throw mapPrismaError(e, { resource: 'Usuario' })
+  }
+}
+
+/**
+ * Envia un correo para restablecer contraseña
+ *
+ * @param {{ email: string, captcha: string, ip: string }} params
+ * @returns {Promise<{ ok: true }>}
+ * @throws {TalentFlowError} 401 si no autenticado; 403 si inactivo; 400 si política/confirmación falla.
+ */
+async function resetAccountRequest({ email, captcha, ip }) {
+  try {
+    
+    const ttlUnit = 'minute'
+    const ttl = 30
+
+    await verifyCaptcha({ ip, challenge: captcha, from: 'update_pass' })
+
+    const user = await prisma.usuario.findFirst({ where: { email } })
+
+    if(!user) {
+      throw new TalentFlowError('Ha ocurrido un error al reestablecer la cuenta', 400)
+    }
+
+    const token = await prisma.usuarioToken.create({
+      data: {
+        usuarioId: user.id,
+        tipo: 'update_pass',
+        expiresAt: dayjs().add(ttl, ttlUnit).toDate()
+      }
+    })
+
+    const fileUrl = new URL('../resources/templateEmailRestablecerCuenta.html', import.meta.url)
+    let emailTemplate = await readFile(fileUrl, 'utf8')
+    emailTemplate = emailTemplate.replace(/\$nombre/g, user.nombre)
+    emailTemplate = emailTemplate.replace(/\$apellido/g, user.apellido)
+    emailTemplate = emailTemplate.replace(/\$reset_url/g, `${process.env.APP_FROM}/#/auth/reset-account?token=${token.id}`)
+
+    await enviarCorreo({ to: user.email, html: emailTemplate, subject: `${appName} - Restablecer cuenta` })
+
+  } catch (e) {
+    if (e instanceof TalentFlowError) throw e
+    throw mapPrismaError(e, { resource: 'Usuario' })
+  }
+}
+
+/**
+ * Reestablece una cuenta
+ *
+ * Reglas:
+ * - `pass` y `repeatPass` deben coincidir.
+ * - Debe cumplir política (>=8, número, símbolo).
+ * - No puede ser igual a la contraseña actual.
+ * - Usuario debe estar activo.
+ *
+ * Efectos:
+ * - Setea `password` (hash scrypt) y `um` con el usuario actual.
+ *
+ * @param {{ pass: string, repeatPass: string, captcha: string, token: string, ip: string }} params
+ * @returns {Promise<{ ok: true }>}
+ * @throws {TalentFlowError} 401 si no autenticado; 403 si inactivo; 400 si política/confirmación falla.
+ */
+async function resetAccount({ pass, repeatPass, captcha, token, ip }) {
+  try {
+    
+    // Confirmación
+    if (!pass || !repeatPass || pass !== repeatPass) {
+      throw new TalentFlowError('Las contraseñas no coinciden', 400)
+    }
+
+    // Política
+    const policyErrors = validatePasswordPolicy(pass)
+    if (policyErrors.length) {
+      throw new TalentFlowError(policyErrors.join('. '), 400)
+    }
+    
+    await verifyCaptcha({ ip, challenge: captcha, from: 'update_pass' })
+
+    const { usuarioId } = await verifyAndConsumeUsuarioToken({ token, tipo: 'update_pass' })
+
+    // Hash + update
+    const pw = hashPassword(pass)
+    await prisma.usuario.update({
+      where: { id: usuarioId },
+      data: { password: pw, um: usuarioId },
     })
 
     return { ok: true }
@@ -222,5 +283,7 @@ async function updatePass({ pass, repeatPass }) {
 
 export const AuthService = {
   login,
-  updatePass
+  activateAccount,
+  resetAccountRequest,
+  resetAccount,
 }

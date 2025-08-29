@@ -2,6 +2,7 @@
 import svgCaptcha from 'svg-captcha'
 import { prisma } from '../prismaClient.js'
 import { mapPrismaError } from '../utils/error.js'
+import { LOWERCASE_NUM_PRESET } from '../utils/utils.js'
 
 /**
  * Función que genera una captcha por ip
@@ -18,7 +19,7 @@ const generarCaptcha = async ({ ip }) => {
       width: 150,
       height: 50,
       background: "#fff",
-      ignoreChars: "oOlI",
+      charPreset: LOWERCASE_NUM_PRESET,
     })
 
     const { text } = captchaImg

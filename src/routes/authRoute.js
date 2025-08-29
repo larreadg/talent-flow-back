@@ -2,7 +2,6 @@ import express from 'express'
 import { body } from 'express-validator'
 import { AuthController } from '../controllers/authController.js'
 import { CaptchaController } from '../controllers/captchaController.js'
-import { authenticateJWT } from '../middlewares/authMiddleware.js'
 
 /** @typedef {import('express').Router} Router */
 
@@ -14,18 +13,6 @@ import { authenticateJWT } from '../middlewares/authMiddleware.js'
  */
 const router = express.Router()
 
-/**
- * POST /auth/login
- * Inicia sesión con username o email + password.
- *
- * Body:
- * - username?: string
- * - email?: string
- * - password: string
- *
- * Reglas:
- * - Debe enviarse al menos `username` o `email`.
- */
 router.post(
   '/login',
   [
@@ -36,26 +23,8 @@ router.post(
   AuthController.login
 )
 
-/**
- * GET /auth/captcha
- * Inicia sesión con username o email + password.
- *
- * Body:
- * - username?: string
- * - email?: string
- * - password: string
- *
- * Reglas:
- * - Debe enviarse al menos `username` o `email`.
- */
-router.get(
-  '/captcha',
-  CaptchaController.get
-)
-
 router.post(
-  '/me/password',
-  authenticateJWT,
+  '/activate-account',
   [
     body('pass').isString().isLength({ min: 8 }),
     body('pass').matches(/[0-9]/).withMessage('Debe incluir al menos un número'),
@@ -64,8 +33,40 @@ router.post(
       if (v !== req.body.pass) throw new Error('Las contraseñas no coinciden')
       return true
     }),
+    body('captcha').notEmpty().withMessage('captcha es requerido'),
+    body('token').notEmpty().withMessage('token es requerido')
   ],
-  AuthController.updatePass
+  AuthController.activateAccount
+)
+
+router.post(
+  '/reset-account',
+  [
+    body('pass').isString().isLength({ min: 8 }),
+    body('pass').matches(/[0-9]/).withMessage('Debe incluir al menos un número'),
+    body('pass').matches(/[^\w\s]/).withMessage('Debe incluir al menos un símbolo'),
+    body('repeatPass').custom((v, { req }) => {
+      if (v !== req.body.pass) throw new Error('Las contraseñas no coinciden')
+      return true
+    }),
+    body('captcha').notEmpty().withMessage('captcha es requerido'),
+    body('token').notEmpty().withMessage('token es requerido')
+  ],
+  AuthController.resetAccount
+)
+
+router.post(
+  '/reset-account/request',
+  [
+    body('email').isEmail().withMessage('email inválido').normalizeEmail(),
+    body('captcha').notEmpty().withMessage('captcha es requerido')
+  ],
+  AuthController.resetAccountRequest
+)
+
+router.get(
+  '/captcha',
+  CaptchaController.get
 )
 
 export default router

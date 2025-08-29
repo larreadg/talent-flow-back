@@ -37,7 +37,7 @@ const ADMIN = {
   username: 'larreadg@gmail.com',
 }
 
-const ROLE_NAMES = ['TF_SYS_ADMIN', 'TF_ADMIN', 'TF_LECTOR']
+const ROLE_NAMES = ['TF_SYS_ADMIN', 'ADMIN', 'LECTOR']
 
 /** ============================
  * Seed

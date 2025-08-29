@@ -9,7 +9,7 @@
   <meta name="x-apple-disable-message-reformatting">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
-  <title>Activa tu cuenta</title>
+  <title>Restablecé tu contraseña</title>
 
   <!--[if mso]>
   <xml>
@@ -27,11 +27,14 @@
     table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
     img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; }
     a { text-decoration:none; }
+
     /* Evita autolink en iOS */
     a[x-apple-data-detectors], .unstyle-auto-detected-links a, .aBn { border-bottom:0 !important; text-decoration:none !important; color:inherit !important; }
+
     /* Evita subrayado en Gmail iOS */
     u + #body a { text-decoration:none !important; }
-    /* Dark mode básicos (soportado en algunos clientes) */
+
+    /* Dark mode básicos */
     @media (prefers-color-scheme: dark) {
       .bg-body { background-color:#0b0b0c !important; }
       .bg-card { background-color:#161617 !important; }
@@ -39,6 +42,7 @@
       .muted { color:#c2c2c2 !important; }
       .btn { color:#ffffff !important; }
     }
+
     /* Responsive */
     @media screen and (max-width: 600px) {
       .container { width:100% !important; }
@@ -50,7 +54,7 @@
 <body id="body" class="bg-body" width="100%" style="margin:0; padding:0; background:#f5f7fb;">
   <!-- Preheader (oculto) -->
   <div style="display:none; visibility:hidden; opacity:0; overflow:hidden; max-height:0; max-width:0; mso-hide:all; font-size:1px; line-height:1px; color:#f5f7fb;">
-    Activá tu cuenta en TalentFlow con un clic.
+    Restablecé tu contraseña de TalentFlow. El enlace vence en 30 minutos.
   </div>
 
   <center role="article" aria-roledescription="email" lang="es" style="width:100%; background:#f5f7fb;">
@@ -59,10 +63,9 @@
         <td align="center" style="padding:32px 12px;">
           <!-- Card -->
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="container bg-card" style="width:600px; background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(20,20,20,.06);">
-            <!-- Header / Logo (opcional) -->
+            <!-- Header / Logo -->
             <tr>
               <td class="px" style="padding:28px 32px; text-align:left; background:#06b6d4;">
-                <!-- Poné tu logo si querés -->
                 <div style="font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:18px; line-height:24px; color:#ffffff; letter-spacing:.2px; font-weight:600;">
                   TalentFlow
                 </div>
@@ -87,51 +90,60 @@
               <td class="px" style="padding:0 32px 20px 32px;">
                 <!--[if mso]>
                 <p style="font-family:Arial, sans-serif; font-size:16px; line-height:24px; margin:0; color:#374151;">
-                  Para activar tu cuenta en TalentFlow, ingresa al siguiente enlace:
+                  Recibimos una solicitud para restablecer tu contraseña de TalentFlow. Para continuar, hacé clic en el siguiente botón:
                 </p>
                 <![endif]-->
                 <div class="text" style="font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:16px; line-height:24px; color:#374151;">
-                  Para activar tu cuenta en TalentFlow, ingresá al siguiente enlace:
+                  Recibimos una solicitud para restablecer tu contraseña de TalentFlow. Para continuar, hacé clic en el siguiente botón:
                 </div>
               </td>
             </tr>
 
-            <!-- CTA Button (bulletproof con VML para Outlook) -->
+            <!-- CTA Button (VML para Outlook) -->
             <tr>
               <td align="left" class="px" style="padding:0 32px 28px 32px;">
                 <!--[if mso]>
-                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="$activation_url"
-                  style="height:44px; v-text-anchor:middle; width:240px;" arcsize="10%" strokecolor="#06b6d4" fillcolor="#06b6d4">
+                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="$reset_url"
+                  style="height:44px; v-text-anchor:middle; width:260px;" arcsize="10%" strokecolor="#06b6d4" fillcolor="#06b6d4">
                   <w:anchorlock/>
                   <center style="color:#ffffff; font-family:Arial, sans-serif; font-size:16px; font-weight:bold;">
-                    Activar cuenta
+                    Restablecer contraseña
                   </center>
                 </v:roundrect>
                 <![endif]-->
                 <!--[if !mso]><!-- -->
-                <a href="$activation_url" class="btn"
-                   style="display:inline-block; background:#06b6d4; border:1px solid #06b6d4; color:#ffffff; font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:16px; line-height:44px; font-weight:700; text-align:center; text-decoration:none; border-radius:6px; width:240px;">
-                  Activar cuenta
+                <a href="$reset_url" class="btn"
+                   style="display:inline-block; background:#06b6d4; border:1px solid #06b6d4; color:#ffffff; font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:16px; line-height:44px; font-weight:700; text-align:center; text-decoration:none; border-radius:6px; width:260px;">
+                  Restablecer contraseña
                 </a>
                 <!--<![endif]-->
               </td>
             </tr>
 
-            <!-- Link de texto (fallback y por accesibilidad) -->
+            <!-- Link de texto (fallback) -->
             <tr>
-              <td class="px" style="padding:0 32px 28px 32px;">
+              <td class="px" style="padding:0 32px 12px 32px;">
                 <div class="muted" style="font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280;">
                   Si el botón no funciona, copiá y pegá este enlace en tu navegador:<br>
-                  <a href="$activation_url" style="word-break:break-all; color:#06b6d4;">$activation_url</a>
+                  <a href="$reset_url" style="word-break:break-all; color:#06b6d4;">$reset_url</a>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Aviso seguridad -->
+            <tr>
+              <td class="px" style="padding:0 32px 24px 32px;">
+                <div class="muted" style="font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280;">
+                  Si no solicitaste este cambio, ignorá este mensaje. Tu contraseña no se modificará.
                 </div>
               </td>
             </tr>
 
             <!-- Footer -->
             <tr>
-              <td class="px" style="padding:20px 32px 32px 32px; border-top:1px solid #eef2f7;">
+              <td class="px" style="padding:16px 32px 32px 32px; border-top:1px solid #eef2f7;">
                 <div class="muted" style="font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280;">
-                  Este enlace es válido por <b>1 día</b>.
+                  Este enlace es válido por <b>30 minutos</b>.
                 </div>
                 <div class="muted" style="font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#6b7280; padding-top:8px;">
                   © <span style="white-space:nowrap;">TalentFlow</span>

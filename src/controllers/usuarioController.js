@@ -226,6 +226,32 @@ async function post(req, res) {
   }
 }
 
+/**
+ * Resetea una contraseña
+ *
+ * @param {Request} req
+ * @param {ExpressResponse} res
+ * @returns {Promise<void>}
+ */
+async function updatePass(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+
+    const result = await UsuarioService.updatePass(req.body)
+    return res
+      .status(200)
+      .send(new Response('success', 200, result, 'Contraseña actualizada'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
+
 export const UsuarioController = {
   getByEmpresa,
   getByDepartamento,
@@ -233,5 +259,6 @@ export const UsuarioController = {
   getById,
   patch,
   delete: remove,
-  post
+  post,
+  updatePass
 }

@@ -119,4 +119,18 @@ router.post(
   UsuarioController.post
 )
 
+router.post(
+  '/me/password',
+  [
+    body('pass').isString().isLength({ min: 8 }),
+    body('pass').matches(/[0-9]/).withMessage('Debe incluir al menos un número'),
+    body('pass').matches(/[^\w\s]/).withMessage('Debe incluir al menos un símbolo'),
+    body('repeatPass').custom((v, { req }) => {
+      if (v !== req.body.pass) throw new Error('Las contraseñas no coinciden')
+      return true
+    }),
+  ],
+  UsuarioController.updatePass
+)
+
 export default router

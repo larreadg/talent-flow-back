@@ -2,7 +2,7 @@
 import { prisma } from '../prismaClient.js'
 import { getCurrentUser } from '../middlewares/requestContext.js'
 import { mapPrismaError, TalentFlowError } from '../utils/error.js'
-import { appName, hasRol, pick, TF_ADMINS } from '../utils/utils.js'
+import { appName, hashPassword, pick, validatePasswordPolicy, verifyPassword } from '../utils/utils.js'
 import { enviarCorreo } from './emailService.js'
 import { readFile } from 'node:fs/promises'
 import dayjs from 'dayjs'
@@ -221,6 +221,10 @@ async function get(params = {}) {
  */
 async function post({ email, nombre, apellido, telefono, rolId, empresaId }) {
   try {
+    // Token de activacion
+    const ttlUnit = 'day'
+    const ttl = 1
+
     const currentUser = getCurrentUser()
     const created = await prisma.usuario.create({
       data: {
@@ -236,20 +240,84 @@ async function post({ email, nombre, apellido, telefono, rolId, empresaId }) {
         activo: false,
         uc: currentUser.id,
         um: currentUser.id,
-        tokenExpiracion: new Date(Date.now() + 60 * 60 * 1000),
         rolId
       },
+    })
+
+    const token = await prisma.usuarioToken.create({
+      data: {
+        usuarioId: created.id,
+        tipo: 'activate_account',
+        expiresAt: dayjs().add(ttl, ttlUnit).toDate()
+      }
     })
 
     const fileUrl = new URL('../resources/templateEmailCrearCuenta.html', import.meta.url)
     let emailTemplate = await readFile(fileUrl, 'utf8')
     emailTemplate = emailTemplate.replace(/\$nombre/g, created.nombre)
     emailTemplate = emailTemplate.replace(/\$apellido/g, created.apellido)
-    emailTemplate = emailTemplate.replace(/\$activation_url/g, `${process.env.APP_FROM}/#/auth/activate-account?token=${created.token}`)
+    emailTemplate = emailTemplate.replace(/\$activation_url/g, `${process.env.APP_FROM}/#/auth/activate-account?token=${token.id}`)
 
     await enviarCorreo({ to: created.email, html: emailTemplate, subject: `${appName} - Activación de cuenta` })
 
   } catch (e) {
+    throw mapPrismaError(e, { resource: 'Usuario' })
+  }
+}
+
+/**
+ * Actualiza la contraseña del usuario autenticado.
+ *
+ * Reglas:
+ * - `pass` y `repeatPass` deben coincidir.
+ * - Debe cumplir política (>=8, número, símbolo).
+ * - No puede ser igual a la contraseña actual.
+ * - Usuario debe estar activo.
+ *
+ * Efectos:
+ * - Setea `password` (hash scrypt) y `um` con el usuario actual.
+ *
+ * @param {{ pass: string, repeatPass: string }} params
+ * @returns {Promise<{ ok: true }>}
+ * @throws {TalentFlowError} 401 si no autenticado; 403 si inactivo; 400 si política/confirmación falla.
+ */
+async function updatePass({ pass, repeatPass }) {
+  try {
+    const currentUser = getCurrentUser()
+    if (!currentUser?.id) throw new TalentFlowError('No autenticado', 401)
+
+    // Confirmación
+    if (!pass || !repeatPass || pass !== repeatPass) {
+      throw new TalentFlowError('Las contraseñas no coinciden', 400)
+    }
+
+    // Política
+    const policyErrors = validatePasswordPolicy(pass)
+    if (policyErrors.length) {
+      throw new TalentFlowError(policyErrors.join('. '), 400)
+    }
+
+    // Usuario
+    const user = await prisma.usuario.findUnique({ where: { id: currentUser.id } })
+    if (!user) throw new TalentFlowError('Usuario no encontrado', 404)
+    if (!user.activo) throw new TalentFlowError('Usuario inactivo', 403)
+
+    // Evitar reutilizar la misma contraseña
+    if (user.password && verifyPassword(user.password, pass)) {
+      throw new TalentFlowError('La nueva contraseña no puede ser igual a la anterior', 400)
+    }
+
+    // Hash + update
+    const pw = hashPassword(pass)
+    await prisma.usuario.update({
+      where: { id: currentUser.id },
+      data: { password: pw, um: currentUser.id },
+    })
+
+    return { ok: true }
+
+  } catch (e) {
+    if (e instanceof TalentFlowError) throw e
     throw mapPrismaError(e, { resource: 'Usuario' })
   }
 }
@@ -260,5 +328,6 @@ export const UsuarioService = {
   patch,
   delete: remove,
   remove,
-  post
+  post,
+  updatePass
 }

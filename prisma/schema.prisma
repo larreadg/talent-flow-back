@@ -15,6 +15,17 @@ datasource db {
 
 /**
  * ===========================================================
+ * ENUMS
+ * ===========================================================
+ */
+
+enum UsuarioTokenTipo {
+  activate_account
+  update_pass
+}
+
+/**
+ * ===========================================================
  * CATÁLOGOS Y ORGANIZACIÓN
  * ===========================================================
  */
@@ -111,9 +122,6 @@ model Usuario {
   activo   Boolean @default(true)
   lastLogin DateTime? @db.Timestamptz(6)
 
-  token String? @default(uuid()) @db.Uuid
-  tokenExpiracion DateTime? @db.Timestamptz(6)
-
   // auditoría
   uc String?
   fc DateTime @default(now()) @db.Timestamptz(6)
@@ -124,6 +132,7 @@ model Usuario {
   rol          Rol?          @relation(fields: [rolId], references: [id], onDelete: Restrict)
   departamento Departamento? @relation(fields: [departamentoId], references: [id], onDelete: SetNull)
   sede         Sede?         @relation(fields: [sedeId], references: [id], onDelete: SetNull)
+  tokens       UsuarioToken[]
 
   // Unicidad por empresa para username y email (multi-tenant)
   @@unique([empresaId, username])
@@ -163,4 +172,19 @@ model Captcha {
   @@unique([challenge, ip])
   @@index([ip])
   @@map("Captcha")
+}
+
+model UsuarioToken {
+  id         String           @id @default(uuid()) @db.Uuid   // el propio token
+  usuarioId  String           @db.Uuid
+  tipo       UsuarioTokenTipo
+  fc         DateTime         @default(now()) @db.Timestamptz(6)
+  expiresAt  DateTime         @db.Timestamptz(6)
+
+  usuario    Usuario          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([expiresAt])
+  @@index([tipo])
+  @@map("Usuario_Token")
 }
