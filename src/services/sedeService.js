@@ -7,69 +7,34 @@ import { pick } from '../utils/utils.js'
 /** @typedef {import('@prisma/client').Sede} Sede */
 
 const ALLOWED_FIELDS = [
-  'empresaId',
   'nombre',
-  'codigo',
   'direccion',
   'ciudad',
-  'region',
   'pais',
-  'timezone',
 ]
 
 /**
  * Lista sedes con paginación, búsqueda y ordenamiento.
  *
- * @param {Object} [params={}] Parámetros de consulta.
- * @param {number} [params.page=1] Número de página (>= 1).
- * @param {number} [params.pageSize=25] Tamaño de página (>= 1).
- * @param {string} [params.q] Texto a buscar en `nombre`, `codigo`, `ciudad`, `region`, `pais`.
- * @param {'nombre'|'ciudad'|'region'|'pais'|'fc'|'fm'} [params.orderBy='nombre'] Campo para ordenar.
- * @param {'asc'|'desc'} [params.order='asc'] Dirección del orden.
- * @param {string} [params.empresaId] (opcional) Filtra por empresa.
- * @returns {Promise<{data: Sede[], meta: {page: number, pageSize: number, total: number, totalPages: number}}>}
+ * @param {Object} params Parámetros de consulta.
+ * @param {string} params.empresaId Filtra por empresa.
+ * @returns {Promise<{data: Sede[], meta: {total: number}}>}
  * Resultado paginado con el arreglo de sedes y metadatos de paginación.
  * @throws {TalentFlowError} Cuando ocurre un error al consultar la base.
  */
-async function getAll({ page = 1, pageSize = 25, q, orderBy = 'nombre', order = 'asc', empresaId } = {}) {
-  const skip = Math.max(0, (Number(page) - 1) * Number(pageSize))
-  const take = Math.max(1, Number(pageSize))
-
-  const where = {
-    ...(empresaId ? { empresaId } : null),
-    ...(q
-      ? {
-          OR: [
-            { nombre: { contains: q, mode: 'insensitive' } },
-            { codigo: { contains: q, mode: 'insensitive' } },
-            { ciudad: { contains: q, mode: 'insensitive' } },
-            { region: { contains: q, mode: 'insensitive' } },
-            { pais: { contains: q, mode: 'insensitive' } },
-          ],
-        }
-      : null),
-  }
-
-  const safeOrder = ['nombre', 'ciudad', 'region', 'pais', 'fc', 'fm'].includes(orderBy) ? orderBy : 'nombre'
-  const direction = order?.toLowerCase() === 'desc' ? 'desc' : 'asc'
-
-  const [data, total] = await Promise.all([
-    prisma.sede.findMany({
-      where: Object.keys(where).length ? where : undefined,
-      orderBy: { [safeOrder]: direction },
-      skip,
-      take,
-    }),
-    prisma.sede.count({ where: Object.keys(where).length ? where : undefined }),
-  ])
+async function getAll({ empresaId }) {
+  
+  const data = await prisma.sede.findMany({
+    where: {
+      empresaId
+    },
+    select: { nombre: true, direccion: true, ciudad: true, pais: true, id: true }
+  })
 
   return {
     data,
     meta: {
-      page: Number(page),
-      pageSize: Number(pageSize),
-      total,
-      totalPages: Math.max(1, Math.ceil(total / take)),
+      total: data.length
     },
   }
 }
@@ -95,8 +60,9 @@ async function getById(id) {
  * @returns {Promise<{data: Sede[], meta: {page: number, pageSize: number, total: number, totalPages: number}}>}
  * @throws {TalentFlowError} Cuando ocurre un error al consultar la base.
  */
-async function getByEmpresa(empresaId, params = {}) {
-  return getAll({ ...params, empresaId })
+async function getByEmpresa() {
+  const currentUser = getCurrentUser()
+  return getAll({ empresaId: currentUser.empresaId })
 }
 
 /**
@@ -115,6 +81,7 @@ async function post(input = {}) {
     // Auditoría
     data.uc = currentUser.id
     data.um = currentUser.id
+    data.empresaId = currentUser.empresaId
 
     const created = await prisma.sede.create({ data })
     return created

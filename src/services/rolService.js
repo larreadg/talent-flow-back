@@ -11,7 +11,7 @@ import { mapPrismaError } from '../utils/error.js'
  */
 async function get() {
   try {
-    return await prisma.rol.findMany({ where: { nombre: { in: ['TF_ADMIN', 'TF_LECTOR'] } }, select: { nombre: true, id: true } })
+    return await prisma.rol.findMany({ where: { nombre: { in: ['ADMIN', 'LECTOR'] } }, select: { nombre: true, id: true } })
   } catch (e) {
     throw mapPrismaError(e, { resource: 'Rol' })
   }

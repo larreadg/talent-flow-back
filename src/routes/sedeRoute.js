@@ -2,6 +2,8 @@
 import express from 'express'
 import { body, param, query } from 'express-validator'
 import { SedeController } from '../controllers/sedeController.js'
+import { verifyRol } from '../middlewares/roleMiddleware.js'
+import { TF_ADMINS, TF_ALL_ROLS } from '../utils/utils.js'
 
 /** @typedef {import('express').Router} Router */
 
@@ -22,29 +24,12 @@ const router = express.Router()
 
 /**
  * GET /sedes
- * Lista sedes con paginación, búsqueda y ordenamiento.
+ * Lista sedes por empresa del usuario
  *
- * Query params:
- * - page?: number (>=1)
- * - pageSize?: number (>=1)
- * - q?: string
- * - orderBy?: 'nombre' | 'ciudad' | 'region' | 'pais' | 'fc' | 'fm'
- * - order?: 'asc' | 'desc'
- * - empresaId?: string (UUID)  ← opcional para filtrar por empresa
  */
 router.get(
   '/',
-  [
-    query('page').optional().isInt({ min: 1 }).toInt().withMessage('page debe ser entero >= 1'),
-    query('pageSize').optional().isInt({ min: 1 }).toInt().withMessage('pageSize debe ser entero >= 1'),
-    query('q').optional().isString().trim(),
-    query('orderBy')
-      .optional()
-      .isIn(ORDER_FIELDS)
-      .withMessage(`orderBy debe ser uno de: ${ORDER_FIELDS.join(', ')}`),
-    query('order').optional().isIn(['asc', 'desc']).withMessage('order debe ser asc o desc'),
-    query('empresaId').optional().isUUID().withMessage('empresaId debe ser UUID'),
-  ],
+  verifyRol(TF_ALL_ROLS),
   SedeController.getAll
 )
 
@@ -54,35 +39,9 @@ router.get(
  */
 router.get(
   '/:id',
+  verifyRol(TF_ALL_ROLS),
   [param('id').isUUID().withMessage('id debe ser un UUID válido')],
   SedeController.getById
-)
-
-/**
- * GET /sedes/empresa/:empresaId
- * Lista sedes de una empresa específica.
- *
- * Path param:
- * - empresaId: string (UUID)
- *
- * Query params opcionales:
- * - page?: number
- * - pageSize?: number
- * - q?: string
- * - orderBy?: 'nombre' | 'ciudad' | 'region' | 'pais' | 'fc' | 'fm'
- * - order?: 'asc' | 'desc'
- */
-router.get(
-  '/empresa/:empresaId',
-  [
-    param('empresaId').isUUID().withMessage('empresaId debe ser un UUID válido'),
-    query('page').optional().isInt({ min: 1 }).toInt(),
-    query('pageSize').optional().isInt({ min: 1 }).toInt(),
-    query('q').optional().isString().trim(),
-    query('orderBy').optional().isIn(ORDER_FIELDS),
-    query('order').optional().isIn(['asc', 'desc']),
-  ],
-  SedeController.getByEmpresa
 )
 
 /**
@@ -101,15 +60,12 @@ router.get(
  */
 router.post(
   '/',
+  verifyRol(TF_ADMINS),
   [
-    body('empresaId').notEmpty().withMessage('empresaId es requerido').bail().isUUID().withMessage('empresaId debe ser UUID'),
     body('nombre').notEmpty().withMessage('nombre es requerido').bail().isString().trim(),
-    body('codigo').optional().isString().trim(),
-    body('direccion').optional().isString().trim(),
-    body('ciudad').optional().isString().trim(),
-    body('region').optional().isString().trim(),
-    body('pais').optional().isString().trim(),
-    body('timezone').optional().isString().trim(),
+    body('direccion').notEmpty().withMessage('direccion es requerido').bail().isString().trim(),
+    body('ciudad').notEmpty().withMessage('ciudad es requerido').bail().isString().trim(),
+    body('pais').notEmpty().withMessage('pais es requerido').bail().isString().trim(),
   ],
   SedeController.post
 )
@@ -130,16 +86,12 @@ router.post(
  */
 router.patch(
   '/:id',
+  verifyRol(TF_ADMINS),
   [
-    param('id').isUUID().withMessage('id debe ser un UUID válido'),
-    body('empresaId').optional().isUUID().withMessage('empresaId debe ser UUID'),
-    body('nombre').optional().isString().trim(),
-    body('codigo').optional().isString().trim(),
-    body('direccion').optional().isString().trim(),
-    body('ciudad').optional().isString().trim(),
-    body('region').optional().isString().trim(),
-    body('pais').optional().isString().trim(),
-    body('timezone').optional().isString().trim(),
+    body('nombre').notEmpty().withMessage('nombre es requerido').bail().isString().trim(),
+    body('direccion').notEmpty().withMessage('direccion es requerido').bail().isString().trim(),
+    body('ciudad').notEmpty().withMessage('ciudad es requerido').bail().isString().trim(),
+    body('pais').notEmpty().withMessage('pais es requerido').bail().isString().trim(),
   ],
   SedeController.patch
 )
@@ -150,6 +102,7 @@ router.patch(
  */
 router.delete(
   '/:id',
+  verifyRol(TF_ADMINS),
   [param('id').isUUID().withMessage('id debe ser un UUID válido')],
   SedeController.delete
 )

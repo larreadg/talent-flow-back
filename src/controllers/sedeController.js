@@ -29,7 +29,7 @@ async function getAll(req, res) {
       return res.status(400).send(new Response('error', 400, null, errors.array()))
     }
 
-    const result = await SedeService.getAll(req.query)
+    const result = await SedeService.getByEmpresa()
     return res
       .status(200)
       .send(new Response('success', 200, result, 'Sedes listadas correctamente'))
@@ -59,42 +59,6 @@ async function getById(req, res) {
     return res
       .status(200)
       .send(new Response('success', 200, item, 'Sede obtenida correctamente'))
-  } catch (e) {
-    if (e instanceof TalentFlowError) {
-      return res.status(e.code).send(new Response('error', e.code, null, e.message))
-    }
-    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
-  }
-}
-
-/**
- * Lista sedes de una empresa específica.
- *
- * Path param:
- * - empresaId: string (UUID)
- *
- * Query params (opcionales):
- * - page?: number
- * - pageSize?: number
- * - q?: string
- * - orderBy?: 'nombre' | 'ciudad' | 'region' | 'pais' | 'fc' | 'fm'
- * - order?: 'asc' | 'desc'
- *
- * @param {Request} req - Express request (usa `req.params.empresaId` y `req.query`).
- * @param {ExpressResponse} res - Express response.
- * @returns {Promise<void>}
- */
-async function getByEmpresa(req, res) {
-  try {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).send(new Response('error', 400, null, errors.array()))
-    }
-
-    const result = await SedeService.getByEmpresa(req.params.empresaId, req.query)
-    return res
-      .status(200)
-      .send(new Response('success', 200, result, 'Sedes por empresa listadas correctamente'))
   } catch (e) {
     if (e instanceof TalentFlowError) {
       return res.status(e.code).send(new Response('error', e.code, null, e.message))
@@ -211,7 +175,6 @@ async function remove(req, res) {
 export const SedeController = {
   getAll,
   getById,
-  getByEmpresa,
   post,
   patch,
   delete: remove,

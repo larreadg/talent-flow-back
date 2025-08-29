@@ -22,6 +22,7 @@ export const hasRol = (usuario, roles) => {
 
 export const TF_SYS_ADMIN = ['TF_SYS_ADMIN']
 export const TF_ADMINS = ['TF_SYS_ADMIN', 'ADMIN']
+export const TF_ALL_ROLS = ['TF_SYS_ADMIN', 'ADMIN', 'LECTOR']
 
 export const LOWERCASE_NUM_PRESET = 'abcdefghjkmnpqrstuvwxyz123456789'
 
