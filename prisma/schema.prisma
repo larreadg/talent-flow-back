@@ -24,6 +24,21 @@ enum UsuarioTokenTipo {
   update_pass
 }
 
+enum VacanteEstado {
+  abierta
+  pausada
+  cerrada
+  cancelada
+}
+
+enum VacanteEtapaEstado {
+  pendiente
+  en_progreso
+  cumplida
+  vencida
+  omitida // por si saltás una etapa justificadamente
+}
+
 /**
  * ===========================================================
  * CATÁLOGOS Y ORGANIZACIÓN
@@ -46,6 +61,8 @@ model Empresa {
   sedes         Sede[]
   departamentos Departamento[]
   usuarios      Usuario[]
+  etapas        Etapa[]      
+  vacantes      Vacante[]      
 
   @@unique([nombre])
   @@map("Empresa")
@@ -70,6 +87,7 @@ model Sede {
 
   empresa    Empresa      @relation(fields: [empresaId], references: [id], onDelete: Restrict)
   usuarios   Usuario[]
+  vacantes   Vacante[]
 
   @@unique([empresaId, nombre])
   @@index([empresaId])
@@ -93,6 +111,8 @@ model Departamento {
   parent     Departamento?  @relation("DepartamentoToDepartamento", fields: [parentId], references: [id], onDelete: SetNull)
   children   Departamento[] @relation("DepartamentoToDepartamento")
   usuarios   Usuario[]
+  vacantes   Vacante[] 
+  etapasResponsables   VacanteEtapa[]
 
   // Departamentos GLOBALes por empresa
   @@unique([empresaId, nombre])
@@ -187,4 +207,93 @@ model UsuarioToken {
   @@index([expiresAt])
   @@index([tipo])
   @@map("Usuario_Token")
+}
+
+/**
+ * ===========================================================
+ * KARAKU
+ * ===========================================================
+ */
+
+model Etapa {
+  id        String  @id @default(uuid()) @db.Uuid
+  empresaId String  @db.Uuid
+  nombre    String
+  slaDias   Int     // SLA base en días (útil como default)
+
+  // auditoría
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  vacantesEtapas VacanteEtapa[]
+
+  @@unique([empresaId, nombre])
+  @@index([empresaId])
+  @@map("Etapa")
+}
+
+model Vacante {
+  id           String  @id @default(uuid()) @db.Uuid
+  empresaId    String  @db.Uuid
+  sedeId       String? @db.Uuid
+  departamentoId String? @db.Uuid // área solicitante
+  nombre       String
+  activo       Boolean @default(true)
+  estado       VacanteEstado @default(abierta)
+  fechaInicio  DateTime? @db.Timestamptz(6) // inicio del proceso (arrancan etapas)
+
+  // auditoría
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  empresa      Empresa      @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  sede         Sede?        @relation(fields: [sedeId], references: [id], onDelete: SetNull)
+  departamento Departamento?@relation(fields: [departamentoId], references: [id], onDelete: SetNull)
+  etapas       VacanteEtapa[]
+
+  @@index([empresaId])
+  @@index([empresaId, activo])
+  @@index([empresaId, estado])
+  @@index([empresaId, fechaInicio])
+  @@map("Vacante")
+}
+
+model VacanteEtapa {
+  id           String   @id @default(uuid()) @db.Uuid
+  vacanteId    String   @db.Uuid
+  etapaId      String   @db.Uuid
+  departamentoId String? @db.Uuid // área responsable de ejecutar la etapa (puede no estar definido al crear)
+  orden        Int      // consecutivo dentro de la vacante
+
+  // snapshot del SLA y fechas de planificación/ejecución
+  slaDias            Int        // copia del catálogo en el momento de planificar
+  fechaInicio        DateTime?  @db.Timestamptz(6) // cuándo inicia realmente
+  fechaFinPlan       DateTime?  @db.Timestamptz(6) // fechaInicio + slaDias (calculada en servicio)
+  fechaCumplimiento  DateTime?  @db.Timestamptz(6) // cuándo terminó realmente
+  retrasoDias        Int?       // opcional (puede calcularse on-the-fly, pero útil para reportes)
+  estado             VacanteEtapaEstado @default(pendiente)
+  comentarios        String?
+  recursos           String?    // URL/slug a recursos (más adelante lo normalizamos a tabla)
+
+  // auditoría
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  vacante      Vacante      @relation(fields: [vacanteId], references: [id], onDelete: Cascade)
+  etapa        Etapa        @relation(fields: [etapaId], references: [id], onDelete: Restrict)
+  departamento Departamento?@relation(fields: [departamentoId], references: [id], onDelete: SetNull)
+
+  @@unique([vacanteId, orden])
+  @@index([vacanteId])
+  @@index([etapaId])
+  @@index([departamentoId])
+  @@index([estado])
+  @@map("Vacante_Etapa")
 }

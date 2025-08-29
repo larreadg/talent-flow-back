@@ -51,38 +51,10 @@ router.get(
 )
 
 /**
- * GET /departamentos/empresa/:empresaId
- * Lista departamentos de una empresa específica.
- *
- * Path param:
- * - empresaId: string (UUID)
- *
- * Query opcionales:
- * - page?: number
- * - pageSize?: number
- * - q?: string
- * - orderBy?: 'nombre' | 'codigo' | 'fc' | 'fm'
- * - order?: 'asc' | 'desc'
- */
-router.get(
-  '/empresa/:empresaId',
-  [
-    param('empresaId').isUUID().withMessage('empresaId debe ser un UUID válido'),
-    query('page').optional().isInt({ min: 1 }).toInt(),
-    query('pageSize').optional().isInt({ min: 1 }).toInt(),
-    query('q').optional().isString().trim(),
-    query('orderBy').optional().isIn(ORDER_FIELDS),
-    query('order').optional().isIn(['asc', 'desc']),
-  ],
-  DepartamentoController.getByEmpresa
-)
-
-/**
  * POST /departamentos
  * Crea un departamento (global por empresa).
  *
  * Body:
- * - empresaId: string (UUID) ← requerido
  * - nombre: string           ← requerido
  * - codigo?: string
  * - parentId?: string (UUID)
@@ -90,7 +62,6 @@ router.get(
 router.post(
   '/',
   [
-    body('empresaId').notEmpty().withMessage('empresaId es requerido').bail().isUUID().withMessage('empresaId debe ser UUID'),
     body('nombre').notEmpty().withMessage('nombre es requerido').bail().isString().trim(),
     body('codigo').optional().isString().trim(),
     body('parentId').optional().isUUID().withMessage('parentId debe ser UUID'),
@@ -103,7 +74,6 @@ router.post(
  * Actualiza parcialmente un departamento.
  *
  * Body (cualquiera de estos campos):
- * - empresaId?: string (UUID)
  * - nombre?: string
  * - codigo?: string
  * - parentId?: string (UUID)
@@ -112,7 +82,6 @@ router.patch(
   '/:id',
   [
     param('id').isUUID().withMessage('id debe ser un UUID válido'),
-    body('empresaId').optional().isUUID().withMessage('empresaId debe ser UUID'),
     body('nombre').optional().isString().trim(),
     body('codigo').optional().isString().trim(),
     body('parentId').optional().isUUID().withMessage('parentId debe ser UUID'),

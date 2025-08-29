@@ -29,7 +29,7 @@ async function getAll(req, res) {
       return res.status(400).send(new Response('error', 400, null, errors.array()))
     }
 
-    const result = await DepartamentoService.getAll(req.query)
+    const result = await DepartamentoService.getByEmpresa()
     return res
       .status(200)
       .send(new Response('success', 200, result, 'Departamentos listados correctamente'))
@@ -59,42 +59,6 @@ async function getById(req, res) {
     return res
       .status(200)
       .send(new Response('success', 200, item, 'Departamento obtenido correctamente'))
-  } catch (e) {
-    if (e instanceof TalentFlowError) {
-      return res.status(e.code).send(new Response('error', e.code, null, e.message))
-    }
-    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
-  }
-}
-
-/**
- * Lista departamentos de una empresa específica.
- *
- * Path param:
- * - empresaId: string (UUID)
- *
- * Query params (opcionales):
- * - page?: number
- * - pageSize?: number
- * - q?: string
- * - orderBy?: 'nombre' | 'codigo' | 'fc' | 'fm'
- * - order?: 'asc' | 'desc'
- *
- * @param {Request} req - Express request (usa `req.params.empresaId` y `req.query`).
- * @param {ExpressResponse} res - Express response.
- * @returns {Promise<void>}
- */
-async function getByEmpresa(req, res) {
-  try {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).send(new Response('error', 400, null, errors.array()))
-    }
-
-    const result = await DepartamentoService.getByEmpresa(req.params.empresaId, req.query)
-    return res
-      .status(200)
-      .send(new Response('success', 200, result, 'Departamentos por empresa listados correctamente'))
   } catch (e) {
     if (e instanceof TalentFlowError) {
       return res.status(e.code).send(new Response('error', e.code, null, e.message))
@@ -206,7 +170,6 @@ async function remove(req, res) {
 export const DepartamentoController = {
   getAll,
   getById,
-  getByEmpresa,
   post,
   patch,
   delete: remove,

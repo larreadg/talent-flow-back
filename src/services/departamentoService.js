@@ -7,59 +7,32 @@ import { pick } from '../utils/utils.js'
 /** @typedef {import('@prisma/client').Departamento} Departamento */
 
 /** Campos permitidos para crear/actualizar Departamento */
-const ALLOWED_FIELDS = ['empresaId', 'nombre', 'codigo', 'parentId']
+const ALLOWED_FIELDS = ['nombre']
 
 /**
  * Lista departamentos con paginación, búsqueda y ordenamiento.
  *
- * @param {Object} [params={}] Parámetros de consulta.
- * @param {number} [params.page=1] Número de página (>= 1).
- * @param {number} [params.pageSize=25] Tamaño de página (>= 1).
- * @param {string} [params.q] Texto a buscar en `nombre` o `codigo`.
- * @param {'nombre'|'codigo'|'fc'|'fm'} [params.orderBy='nombre'] Campo para ordenar.
- * @param {'asc'|'desc'} [params.order='asc'] Dirección del orden.
- * @param {string} [params.empresaId] (opcional) Filtra por empresa.
- * @returns {Promise<{data: Departamento[], meta: {page: number, pageSize: number, total: number, totalPages: number}}>}
- * Resultado paginado con los departamentos y metadatos de paginación.
- * @throws {import('../utils/error.js').TalentFlowError} Cuando ocurre un error al consultar la base.
+ * @param {Object} params Parámetros de consulta.
+ * @param {string} params.empresaId Filtra por empresa.
+ * @returns {Promise<{data: Departamento[], meta: {total: number}}>}
+ * Resultado paginado con el arreglo de sedes y metadatos de paginación.
+ * @throws {TalentFlowError} Cuando ocurre un error al consultar la base.
  */
-async function getAll({ page = 1, pageSize = 25, q, orderBy = 'nombre', order = 'asc', empresaId } = {}) {
-  const skip = Math.max(0, (Number(page) - 1) * Number(pageSize))
-  const take = Math.max(1, Number(pageSize))
-
-  const where = {
-    ...(empresaId ? { empresaId } : null),
-    ...(q
-      ? {
-          OR: [
-            { nombre: { contains: q, mode: 'insensitive' } },
-            { codigo: { contains: q, mode: 'insensitive' } },
-          ],
-        }
-      : null),
-  }
-
-  const safeOrder = ['nombre', 'codigo', 'fc', 'fm'].includes(orderBy) ? orderBy : 'nombre'
-  const direction = order?.toLowerCase() === 'desc' ? 'desc' : 'asc'
-  const whereOrUndefined = Object.keys(where).length ? where : undefined
-
-  const [data, total] = await Promise.all([
-    prisma.departamento.findMany({
-      where: whereOrUndefined,
-      orderBy: { [safeOrder]: direction },
-      skip,
-      take,
-    }),
-    prisma.departamento.count({ where: whereOrUndefined }),
-  ])
+async function getAll({ empresaId } = {}) {
+  const data = await prisma.departamento.findMany({
+    where: {
+      empresaId
+    },
+    select: { nombre: true, id: true },
+    orderBy: {
+      nombre: 'asc'
+    }
+  })
 
   return {
     data,
     meta: {
-      page: Number(page),
-      pageSize: Number(pageSize),
-      total,
-      totalPages: Math.max(1, Math.ceil(total / take)),
+      total: data.length
     },
   }
 }
@@ -85,8 +58,9 @@ async function getById(id) {
  * @returns {Promise<{data: Departamento[], meta: {page: number, pageSize: number, total: number, totalPages: number}}>}
  * @throws {import('../utils/error.js').TalentFlowError} Cuando ocurre un error al consultar la base.
  */
-async function getByEmpresa(empresaId, params = {}) {
-  return getAll({ ...params, empresaId })
+async function getByEmpresa() {
+  const currentUser = getCurrentUser()
+  return getAll({ empresaId: currentUser.empresaId })
 }
 
 /**
@@ -104,6 +78,7 @@ async function post(input = {}) {
     const data = pick(input, ALLOWED_FIELDS)
     data.uc = currentUser.id
     data.um = currentUser.id
+    data.empresaId = currentUser.empresaId
 
     const created = await prisma.departamento.create({ data })
     return created
