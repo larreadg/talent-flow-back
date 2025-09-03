@@ -1,6 +1,8 @@
 import express from 'express'
 import { body, param, query } from 'express-validator'
 import { EmpresaController } from '../controllers/empresaController.js'
+import { verifyRol } from '../middlewares/roleMiddleware.js'
+import { TF_SYS_ADMIN } from '../utils/utils.js'
 
 /** @typedef {import('express').Router} Router */
 
@@ -32,6 +34,7 @@ const ORDER_FIELDS = ['nombre', 'razonSocial', 'ruc', 'fc', 'fm']
  */
 router.get(
   '/',
+  verifyRol(TF_SYS_ADMIN),
   [
     query('page').optional().isInt({ min: 1 }).toInt().withMessage('page debe ser entero >= 1'),
     query('pageSize').optional().isInt({ min: 1 }).toInt().withMessage('pageSize debe ser entero >= 1'),
@@ -51,6 +54,7 @@ router.get(
  */
 router.get(
   '/:id',
+  verifyRol(TF_SYS_ADMIN),
   [param('id').isUUID().withMessage('id debe ser un UUID válido')],
   EmpresaController.getById
 )
@@ -67,6 +71,7 @@ router.get(
  */
 router.post(
   '/',
+  verifyRol(TF_SYS_ADMIN),
   [
     body('nombre').notEmpty().withMessage('nombre es requerido').bail().isString().trim(),
     body('razonSocial').optional().isString().trim(),
@@ -88,6 +93,7 @@ router.post(
  */
 router.patch(
   '/:id',
+  verifyRol(TF_SYS_ADMIN),
   [
     param('id').isUUID().withMessage('id debe ser un UUID válido'),
     body('nombre').optional().isString().trim(),
@@ -104,6 +110,7 @@ router.patch(
  */
 router.delete(
   '/:id',
+  verifyRol(TF_SYS_ADMIN),
   [param('id').isUUID().withMessage('id debe ser un UUID válido')],
   EmpresaController.delete
 )

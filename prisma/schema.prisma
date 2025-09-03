@@ -24,21 +24,6 @@ enum UsuarioTokenTipo {
   update_pass
 }
 
-enum VacanteEstado {
-  abierta
-  pausada
-  cerrada
-  cancelada
-}
-
-enum VacanteEtapaEstado {
-  pendiente
-  en_progreso
-  cumplida
-  vencida
-  omitida // por si saltás una etapa justificadamente
-}
-
 /**
  * ===========================================================
  * CATÁLOGOS Y ORGANIZACIÓN
@@ -62,7 +47,9 @@ model Empresa {
   departamentos Departamento[]
   usuarios      Usuario[]
   etapas        Etapa[]      
-  vacantes      Vacante[]      
+  vacantes      Vacante[]
+  procesos      Proceso[]   
+  diasNoLaborales DiaNoLaboral[]   
 
   @@unique([nombre])
   @@map("Empresa")
@@ -87,7 +74,6 @@ model Sede {
 
   empresa    Empresa      @relation(fields: [empresaId], references: [id], onDelete: Restrict)
   usuarios   Usuario[]
-  vacantes   Vacante[]
 
   @@unique([empresaId, nombre])
   @@index([empresaId])
@@ -112,7 +98,6 @@ model Departamento {
   children   Departamento[] @relation("DepartamentoToDepartamento")
   usuarios   Usuario[]
   vacantes   Vacante[] 
-  etapasResponsables   VacanteEtapa[]
 
   // Departamentos GLOBALes por empresa
   @@unique([empresaId, nombre])
@@ -209,17 +194,144 @@ model UsuarioToken {
   @@map("Usuario_Token")
 }
 
-/**
- * ===========================================================
- * KARAKU
- * ===========================================================
- */
+
+// ===== Karaku =====
+enum VacanteEstado {
+  abierta
+  pausada
+  cerrada
+  cancelada
+}
 
 model Etapa {
   id        String  @id @default(uuid()) @db.Uuid
   empresaId String  @db.Uuid
   nombre    String
-  slaDias   Int     // SLA base en días (útil como default)
+  slaDias   Int
+  activo    Boolean @default(true)
+
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  procesosEtapas ProcesoEtapa[]
+
+  @@unique([empresaId, nombre])
+  @@index([empresaId, activo])
+  @@index([empresaId])
+  @@map("Etapa")
+}
+
+model Proceso {
+  id        String  @id @default(uuid()) @db.Uuid
+  empresaId String  @db.Uuid
+  nombre    String
+  descripcion String?
+  activo    Boolean @default(true)
+
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  etapas  ProcesoEtapa[]
+  vacantes Vacante[]
+
+  @@unique([empresaId, nombre])
+  @@index([empresaId, activo])
+  @@map("Proceso")
+}
+
+model ProcesoEtapa {
+  id        String  @id @default(uuid()) @db.Uuid
+  procesoId String  @db.Uuid
+  etapaId   String  @db.Uuid
+  orden     Int
+
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  proceso Proceso @relation(fields: [procesoId], references: [id], onDelete: Cascade)
+  etapa   Etapa   @relation(fields: [etapaId], references: [id], onDelete: Restrict)
+  // Lado opuesto para el uso en vacantes:
+  vacantesEtapas VacanteEtapa[]
+
+  @@unique([procesoId, orden])
+  @@index([procesoId])
+  @@index([etapaId])
+  @@unique([procesoId, etapaId])
+  @@map("Proceso_Etapa")
+}
+
+model Vacante {
+  id             String  @id @default(uuid()) @db.Uuid
+  empresaId      String  @db.Uuid
+  procesoId      String  @db.Uuid
+  nombre         String
+  fechaInicio    DateTime? @db.Date
+  departamentoId String?   @db.Uuid
+  estado         VacanteEstado @default(abierta)
+  activo         Boolean @default(true)
+
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  proceso      Proceso       @relation(fields: [procesoId], references: [id], onDelete: Restrict)
+  departamento Departamento? @relation(fields: [departamentoId], references: [id], onDelete: SetNull)
+
+  etapasVacante VacanteEtapa[]
+
+  @@index([empresaId])
+  @@index([empresaId, procesoId])
+  @@index([empresaId, estado])
+  @@index([empresaId, activo])
+  @@map("Vacante")
+}
+
+model VacanteEtapa {
+  id             String  @id @default(uuid()) @db.Uuid
+  vacanteId      String  @db.Uuid
+  procesoEtapaId String  @db.Uuid
+  fechaInicio          DateTime? @db.Date
+  fechaFinalizacion    DateTime? @db.Date
+  fechaCumplimiento    DateTime? @db.Date
+  comentarios    String?
+  recursos       String?
+
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  vacante       Vacante      @relation(fields: [vacanteId], references: [id], onDelete: Cascade)
+  procesoEtapa  ProcesoEtapa @relation(fields: [procesoEtapaId], references: [id], onDelete: Restrict)
+
+  // Evita duplicar una misma fila del proceso en la vacante
+  @@unique([vacanteId, procesoEtapaId])
+  @@index([vacanteId])
+  @@index([procesoEtapaId])
+  @@map("Vacante_Etapa")
+}
+
+enum DiaNoLaboralTipo {
+  nacional
+  empresa
+}
+
+model DiaNoLaboral {
+  id        String           @id @default(uuid()) @db.Uuid
+  tipo      DiaNoLaboralTipo
+  empresaId String  @db.Uuid   // null si es nacional, obligatorio si es de empresa
+  nombre    String
+  fecha     DateTime @db.Date
 
   // auditoría
   uc String?
@@ -228,72 +340,11 @@ model Etapa {
   fm DateTime @updatedAt @db.Timestamptz(6)
 
   empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Restrict)
-  vacantesEtapas VacanteEtapa[]
 
-  @@unique([empresaId, nombre])
+  @@index([tipo])
   @@index([empresaId])
-  @@map("Etapa")
-}
-
-model Vacante {
-  id           String  @id @default(uuid()) @db.Uuid
-  empresaId    String  @db.Uuid
-  sedeId       String? @db.Uuid
-  departamentoId String? @db.Uuid // área solicitante
-  nombre       String
-  activo       Boolean @default(true)
-  estado       VacanteEstado @default(abierta)
-  fechaInicio  DateTime? @db.Timestamptz(6) // inicio del proceso (arrancan etapas)
-
-  // auditoría
-  uc String?
-  fc DateTime @default(now()) @db.Timestamptz(6)
-  um String?
-  fm DateTime @updatedAt @db.Timestamptz(6)
-
-  empresa      Empresa      @relation(fields: [empresaId], references: [id], onDelete: Restrict)
-  sede         Sede?        @relation(fields: [sedeId], references: [id], onDelete: SetNull)
-  departamento Departamento?@relation(fields: [departamentoId], references: [id], onDelete: SetNull)
-  etapas       VacanteEtapa[]
-
-  @@index([empresaId])
-  @@index([empresaId, activo])
-  @@index([empresaId, estado])
-  @@index([empresaId, fechaInicio])
-  @@map("Vacante")
-}
-
-model VacanteEtapa {
-  id           String   @id @default(uuid()) @db.Uuid
-  vacanteId    String   @db.Uuid
-  etapaId      String   @db.Uuid
-  departamentoId String? @db.Uuid // área responsable de ejecutar la etapa (puede no estar definido al crear)
-  orden        Int      // consecutivo dentro de la vacante
-
-  // snapshot del SLA y fechas de planificación/ejecución
-  slaDias            Int        // copia del catálogo en el momento de planificar
-  fechaInicio        DateTime?  @db.Timestamptz(6) // cuándo inicia realmente
-  fechaFinPlan       DateTime?  @db.Timestamptz(6) // fechaInicio + slaDias (calculada en servicio)
-  fechaCumplimiento  DateTime?  @db.Timestamptz(6) // cuándo terminó realmente
-  retrasoDias        Int?       // opcional (puede calcularse on-the-fly, pero útil para reportes)
-  estado             VacanteEtapaEstado @default(pendiente)
-  comentarios        String?
-  recursos           String?    // URL/slug a recursos (más adelante lo normalizamos a tabla)
-
-  // auditoría
-  uc String?
-  fc DateTime @default(now()) @db.Timestamptz(6)
-  um String?
-  fm DateTime @updatedAt @db.Timestamptz(6)
-
-  vacante      Vacante      @relation(fields: [vacanteId], references: [id], onDelete: Cascade)
-  etapa        Etapa        @relation(fields: [etapaId], references: [id], onDelete: Restrict)
-  departamento Departamento?@relation(fields: [departamentoId], references: [id], onDelete: SetNull)
-
-  @@unique([vacanteId, orden])
-  @@index([vacanteId])
-  @@index([etapaId])
-  @@index([departamentoId])
-  @@index([estado])
-  @@map("Vacante_Etapa")
+  @@index([fecha])
+  @@unique([empresaId, nombre, fecha])
+  @@index([tipo, nombre, fecha])
+  @@map("Dia_No_Laboral")
 }
