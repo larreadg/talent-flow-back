@@ -7,6 +7,7 @@ import usuarioRoute from './usuarioRoute.js'
 import authRoute from './authRoute.js'
 import diaNoLaboralRoute from './diaNoLaboralRoute.js'
 import etapaRoute from './etapaRoute.js'
+import procesoRoute from './procesoRoute.js'
 import { authenticateJWT } from '../middlewares/authMiddleware.js'
 
 /**
@@ -30,5 +31,6 @@ router.use('/roles', authenticateJWT, rolRoute)
 router.use('/usuarios', authenticateJWT, usuarioRoute)
 router.use('/dia-no-laboral', authenticateJWT, diaNoLaboralRoute)
 router.use('/etapas', authenticateJWT, etapaRoute)
+router.use('/procesos', authenticateJWT, procesoRoute)
 
 export default router
