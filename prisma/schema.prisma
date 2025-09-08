@@ -74,6 +74,7 @@ model Sede {
 
   empresa    Empresa      @relation(fields: [empresaId], references: [id], onDelete: Restrict)
   usuarios   Usuario[]
+  vacantes   Vacante[]
 
   @@unique([empresaId, nombre])
   @@index([empresaId])
@@ -273,8 +274,9 @@ model Vacante {
   empresaId      String  @db.Uuid
   procesoId      String  @db.Uuid
   nombre         String
-  fechaInicio    DateTime? @db.Date
-  departamentoId String?   @db.Uuid
+  fechaInicio    DateTime @db.Date
+  departamentoId String   @db.Uuid
+  sedeId         String   @db.Uuid
   estado         VacanteEstado @default(abierta)
   activo         Boolean @default(true)
 
@@ -285,10 +287,13 @@ model Vacante {
 
   empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Restrict)
   proceso      Proceso       @relation(fields: [procesoId], references: [id], onDelete: Restrict)
-  departamento Departamento? @relation(fields: [departamentoId], references: [id], onDelete: SetNull)
+  departamento Departamento @relation(fields: [departamentoId], references: [id], onDelete: Restrict)
+  sede         Sede @relation(fields: [sedeId], references: [id], onDelete: Restrict)
 
   etapasVacante VacanteEtapa[]
+  diasNoLaborales VacanteDiaNoLaboral[]
 
+  @@unique([empresaId, procesoId, nombre, fechaInicio, departamentoId, sedeId, estado])
   @@index([empresaId])
   @@index([empresaId, procesoId])
   @@index([empresaId, estado])
@@ -340,6 +345,7 @@ model DiaNoLaboral {
   fm DateTime @updatedAt @db.Timestamptz(6)
 
   empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  vacantesAfectadas VacanteDiaNoLaboral[]
 
   @@index([tipo])
   @@index([empresaId])
@@ -347,4 +353,22 @@ model DiaNoLaboral {
   @@unique([empresaId, nombre, fecha])
   @@index([tipo, nombre, fecha])
   @@map("Dia_No_Laboral")
+}
+
+model VacanteDiaNoLaboral {
+  id              String  @id @default(uuid()) @db.Uuid
+  vacanteId       String  @db.Uuid
+  diaNoLaboralId  String  @db.Uuid
+
+  // auditoría
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  diaNoLaboral    DiaNoLaboral @relation(fields: [diaNoLaboralId], references: [id], onDelete: Restrict)
+  vacante         Vacante @relation(fields: [vacanteId], references: [id], onDelete: Restrict)
+  
+  @@index([vacanteId, diaNoLaboralId])
+  @@map("Vacante_Dia_No_Laboral")
 }
