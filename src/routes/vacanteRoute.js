@@ -1,6 +1,6 @@
 import express from 'express'
 import { VacanteController } from '../controllers/vacanteController.js'
-import { TF_ADMINS } from '../utils/utils.js'
+import { TF_ADMINS, TF_ALL_ROLS } from '../utils/utils.js'
 import { verifyRol } from '../middlewares/roleMiddleware.js'
 import { body, param, query } from 'express-validator'
 
@@ -15,8 +15,8 @@ import { body, param, query } from 'express-validator'
 const router = express.Router()
 
 /**
- * GET /procesos
- * Lista procesos de la empresa del usuario actual.
+ * GET /vacantes
+ * Lista vacantes de la empresa del usuario actual.
  * Incluye etapas (ordenadas) según el service.
  */
 router.get('/',
@@ -35,6 +35,20 @@ router.get('/',
             .trim()
             .notEmpty()
             .withMessage('filter no puede ser vacío si se provee'),
+        query('sortBy')
+            .optional()
+            .isString()
+            .trim()
+            .notEmpty()
+            .withMessage('sortBy no puede ser vacío si se provee'),
+        query('sortDir')
+            .optional()
+            .isString()
+            .trim()
+            .notEmpty()
+            .withMessage('sortDir no puede ser vacío si se provee')
+            .isIn(['asc', 'desc'])
+            .withMessage('sortDir debe ser asc o desc')
     ],
     verifyRol(TF_ADMINS),
     VacanteController.getAll
@@ -90,6 +104,39 @@ router.patch('/:id',
     ],
     verifyRol(TF_ADMINS),
     VacanteController.patch
+)
+
+router.get('/estados',
+    verifyRol(TF_ALL_ROLS),
+    VacanteController.getResumenPorEstado
+)
+
+/**
+ * GET /vacantes/:id
+ * Obtiene una sede por ID (UUID).
+ */
+router.get(
+    '/:id',
+    verifyRol(TF_ALL_ROLS),
+    [param('id').isUUID().withMessage('id debe ser un UUID válido')],
+    VacanteController.getById
+)
+
+router.post('/completar-etapa',
+    [
+        body('id')
+            .exists().withMessage('id es requerido')
+            .bail()
+            .isUUID().withMessage('id debe ser un UUID válido'),
+        body('fechaCumplimiento')
+            .exists().withMessage('fechaCumplimiento es requerido')
+            .bail()
+            .isISO8601({ strict: true }).withMessage('fechaCumplimiento debe ser ISO-8601 (YYYY-MM-DD)')
+            .bail()
+            .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Use formato YYYY-MM-DD'),
+    ],
+    verifyRol(TF_ADMINS),
+    VacanteController.completarEtapa
 )
 
 export default router

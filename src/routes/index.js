@@ -9,6 +9,7 @@ import diaNoLaboralRoute from './diaNoLaboralRoute.js'
 import etapaRoute from './etapaRoute.js'
 import procesoRoute from './procesoRoute.js'
 import vacanteRoute from './vacanteRoute.js'
+import vacanteEtapaComentarioRoutes from './vacanteEtapaComentarioRoutes.js'
 import { authenticateJWT } from '../middlewares/authMiddleware.js'
 
 /**
@@ -34,5 +35,6 @@ router.use('/dia-no-laboral', authenticateJWT, diaNoLaboralRoute)
 router.use('/etapas', authenticateJWT, etapaRoute)
 router.use('/procesos', authenticateJWT, procesoRoute)
 router.use('/vacantes', authenticateJWT, vacanteRoute)
+router.use('/comentarios', authenticateJWT, vacanteEtapaComentarioRoutes)
 
 export default router

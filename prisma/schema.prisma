@@ -200,8 +200,14 @@ model UsuarioToken {
 enum VacanteEstado {
   abierta
   pausada
-  cerrada
+  finalizada
   cancelada
+}
+
+enum VacanteEtapaEstado {
+  abierta
+  pendiente
+  finalizada
 }
 
 model Etapa {
@@ -279,6 +285,7 @@ model Vacante {
   sedeId         String   @db.Uuid
   estado         VacanteEstado @default(abierta)
   activo         Boolean @default(true)
+  recursos       String?
 
   uc String?
   fc DateTime @default(now()) @db.Timestamptz(6)
@@ -308,8 +315,7 @@ model VacanteEtapa {
   fechaInicio          DateTime? @db.Date
   fechaFinalizacion    DateTime? @db.Date
   fechaCumplimiento    DateTime? @db.Date
-  comentarios    String?
-  recursos       String?
+  estado         VacanteEtapaEstado @default(pendiente)
 
   uc String?
   fc DateTime @default(now()) @db.Timestamptz(6)
@@ -318,12 +324,28 @@ model VacanteEtapa {
 
   vacante       Vacante      @relation(fields: [vacanteId], references: [id], onDelete: Cascade)
   procesoEtapa  ProcesoEtapa @relation(fields: [procesoEtapaId], references: [id], onDelete: Restrict)
+  comentarios   VacanteEtapaComentario[]
 
   // Evita duplicar una misma fila del proceso en la vacante
   @@unique([vacanteId, procesoEtapaId])
   @@index([vacanteId])
   @@index([procesoEtapaId])
   @@map("Vacante_Etapa")
+}
+
+model VacanteEtapaComentario {
+  id                  String  @id @default(uuid()) @db.Uuid
+  vacanteEtapaId      String  @db.Uuid
+  comentario          String
+
+  uc String?
+  fc DateTime @default(now()) @db.Timestamptz(6)
+  um String?
+  fm DateTime @updatedAt @db.Timestamptz(6)
+
+  vacanteEtapa        VacanteEtapa      @relation(fields: [vacanteEtapaId], references: [id], onDelete: Cascade)
+  @@index([vacanteEtapaId])
+  @@map("Vacante_Etapa_Comentario")
 }
 
 enum DiaNoLaboralTipo {

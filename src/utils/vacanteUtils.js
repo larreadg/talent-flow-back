@@ -53,3 +53,56 @@ export function toDateOnly(value) {
     // conservar solo la parte de fecha
     return new Date(d.format('YYYY-MM-DD') + 'T00:00:00.000Z')
 }
+
+export function buildOrderBy(sortBy, sortDir) {
+    const dir = sortDir === 'desc' ? 'desc' : 'asc';
+  
+    // Whitelist por seguridad (evita sort arbitrario)
+    const allowed = [
+      'nombre',
+      'fechaInicio',
+      'estado',
+      'departamento.nombre',
+      'sede.nombre',
+    ];
+  
+    if (!allowed.includes(sortBy)) return { nombre: 'asc' };
+  
+    const parts = String(sortBy).split('.');
+  
+    // Campo simple
+    if (parts.length === 1) {
+      return { [parts[0]]: dir };
+    }
+  
+    // Relación.nestedField (1 nivel)
+    if (parts.length === 2) {
+      const [rel, field] = parts;
+      return { [rel]: { [field]: dir } };
+    }
+  
+    // Si algún día querés más niveles, extender acá.
+    return { nombre: 'asc' };
+}
+
+export const STATES = ['abierta', 'pausada', 'finalizada', 'cancelada'];
+
+/**
+ * Normaliza un parámetro que puede venir como:
+ * - array de strings: ["a","b"]
+ * - string csv: "a,b,c"
+ * - null/undefined
+ * Retorna siempre string[] sin vacíos ni espacios.
+ */
+export function normalizeList(input) {
+    if (Array.isArray(input)) {
+      return input.map(s => String(s).trim()).filter(Boolean);
+    }
+    if (typeof input === 'string') {
+      return input
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+    return [];
+}

@@ -26,12 +26,17 @@ async function getAll(req, res) {
         .send(new Response('error', 400, null, errors.array()))
     }
 
-    const { limit, offset, filter } = req.query
+    const { limit, offset, filter, sortBy, sortDir, estados, departamentos, sedes } = req.query
 
     const result = await VacanteService.getByEmpresa({
       limit: limit ? parseInt(limit, 10) : undefined,
       offset: offset ? parseInt(offset, 10) : undefined,
       filter: filter ?? null,
+      sortBy: sortBy ?? null,
+      sortDir: sortDir ?? null,
+      estados: estados ?? null,
+      departamentos: departamentos ?? null,
+      sedes: sedes ?? null,
     })
 
     return res
@@ -110,9 +115,95 @@ async function patch(req, res) {
   }
 }
 
+/**
+ * GET /vacantes/estados
+ * Obtener vacantes por estados agrupados.
+ *
+ * @param {Request} req
+ * @param {ExpressResponse} res
+ * @returns {Promise<void>}
+ */
+async function getResumenPorEstado(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+
+    const data = await VacanteService.getResumenPorEstado()
+
+    return res
+      .status(200)
+      .send(new Response('success', 200, data, 'Vacantes agrupadas obtenidas'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
+
+/**
+ * Obtiene una vacante por su ID (UUID).
+ *
+ * @param {Request} req - Express request (usa `req.params.id`).
+ * @param {ExpressResponse} res - Express response.
+ * @returns {Promise<void>}
+ */
+async function getById(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+
+    const item = await VacanteService.getById(req.params.id)
+    return res
+      .status(200)
+      .send(new Response('success', 200, item, 'Vacante obtenida correctamente'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
+
+/**
+ * POST /vacantes/completar-etapa
+ * Cierra una etapa y recalcula n + 1 etapas
+ * calculando fechas hábiles e ignorando feriados.
+ *
+ * @param {Request} req
+ * @param {ExpressResponse} res
+ * @returns {Promise<void>}
+ */
+async function completarEtapa(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+
+    const payload = /** @type {{ id: string, fechaCumplimiento: string }} */ (req.body)
+    const changed = await VacanteService.completarEtapa(payload)
+
+    return res
+      .status(201)
+      .send(new Response('success', 201, changed, 'Vacante actualizada exitosamente'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
 
 export const VacanteController = {
   getAll,
   post,
-  patch
+  patch,
+  getResumenPorEstado,
+  getById,
+  completarEtapa
 }
