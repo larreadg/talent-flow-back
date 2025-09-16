@@ -70,7 +70,7 @@ async function post(req, res) {
         return res.status(400).send(new Response('error', 400, null, errors.array()))
       }
   
-      const payload = /** @type {{ nombre:string, procesoId:string, fechaInicio:string, departamentoId?:string|null }} */ (req.body)
+      const payload = /** @type {{ nombre:string, procesoId:string, fechaInicio:string, departamentoId?:string|null, aumentoDotancion:boolean }} */ (req.body)
       const created = await VacanteService.post(payload)
   
       return res
@@ -100,7 +100,7 @@ async function patch(req, res) {
     }
 
     const { id } = req.params
-    const payload = /** @type {{ nombre?:string, departamentoId?:string|null, sedeId?:string|null, fechaInicio?:string }} */ (req.body)
+    const payload = /** @type {{ nombre?:string, departamentoId?:string|null, sedeId?:string|null, fechaInicio?:string, aumentoDotancion:boolean, resultado:'promocion_interna', 'traslado', 'contratacion_externa' }} */ (req.body)
 
     const updated = await VacanteService.patch(id, payload)
 

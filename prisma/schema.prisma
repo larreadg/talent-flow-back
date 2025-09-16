@@ -210,6 +210,22 @@ enum VacanteEtapaEstado {
   finalizada
 }
 
+enum EtapaResponsable {
+  reclutamiento
+  solicitante
+}
+
+enum Tipo {
+  reclutamiento
+  solicitante
+}
+
+enum VacanteResultado {
+  promocion_interna
+  traslado
+  contratacion_externa
+}
+
 model Etapa {
   id        String  @id @default(uuid()) @db.Uuid
   empresaId String  @db.Uuid
@@ -257,6 +273,7 @@ model ProcesoEtapa {
   procesoId String  @db.Uuid
   etapaId   String  @db.Uuid
   orden     Int
+  responsable EtapaResponsable @default(solicitante)
 
   uc String?
   fc DateTime @default(now()) @db.Timestamptz(6)
@@ -285,6 +302,8 @@ model Vacante {
   sedeId         String   @db.Uuid
   estado         VacanteEstado @default(abierta)
   activo         Boolean @default(true)
+  aumentoDotacion Boolean @default(false)
+  resultado      VacanteResultado?
   recursos       String?
 
   uc String?

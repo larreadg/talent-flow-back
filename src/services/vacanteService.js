@@ -11,7 +11,7 @@ dayjs.extend(utc)
 dayjs.extend(localizedFormat)
 dayjs.locale('es')
 
-const PATCH_ALLOWED = ['nombre', 'departamentoId', 'sedeId', 'fechaInicio', 'estado']
+const PATCH_ALLOWED = ['nombre', 'departamentoId', 'sedeId', 'fechaInicio', 'estado', 'aumentoDotacion', 'resultado']
 
 /**
  * GET: Lista vacantes por empresa del usuario actual con paginación y filtro.
@@ -172,10 +172,10 @@ async function getByEmpresa({
 }
 
 /**
- * Obtener vacante + fechas no seleccionables
+ * Obtener vacante + fechas no seleccionables + métricas hábiles
  *
  * @param {string} id UUID de la vacante.
- * @returns {Promise<{data: Vacante, meta: any}>}
+ * @returns {Promise<{data: Vacante & { disabledDates: string[] }, meta: any}>}
  */
 async function getById(id) {
     try {
@@ -195,6 +195,7 @@ async function getById(id) {
                             select: {
                                 id: true,
                                 orden: true,
+                                responsable: true,
                                 etapa: { select: { nombre: true, slaDias: true } },
                             },
                         },
@@ -215,56 +216,120 @@ async function getById(id) {
         }
 
         /** ----------------------------
-         *  Construcción de disabledDates
-         *  ---------------------------- */
+         * Helpers de fechas hábiles
+         * ---------------------------- */
         const toYMD = (d) => (d ? new Date(d).toISOString().slice(0, 10) : null);
+        const fromYMD = (s) => new Date(s + "T00:00:00.000Z");
+        const addDaysUTC = (date, days) => {
+            const d = new Date(date.getTime());
+            d.setUTCDate(d.getUTCDate() + days);
+            return d;
+        };
 
-        // 1) Determinar rango: inicio de la PRIMERA etapa y fin efectivo de la ÚLTIMA etapa
+        // Set de feriados asociados a la vacante
+        const holidaySet = new Set(
+            (vacante.diasNoLaborales ?? []).map((vdl) => toYMD(vdl.diaNoLaboral.fecha))
+        );
+
+        const isWorkingDay = (date) => {
+            const ymd = toYMD(date);
+            const dow = date.getUTCDay(); // 0=Dom, 6=Sáb
+            if (dow === 0 || dow === 6) return false;
+            if (holidaySet.has(ymd)) return false;
+            return true;
+        };
+
+        // Cuenta días hábiles INCLUSIVOS entre startStr y endStr (YYYY-MM-DD).
+        const countBusinessDaysInclusive = (startStr, endStr) => {
+            if (!startStr || !endStr) return 0;
+            let start = fromYMD(startStr);
+            const end = fromYMD(endStr);
+            if (start > end) return 0;
+
+            let count = 0;
+            while (start <= end) {
+                if (isWorkingDay(start)) count++;
+                start = addDaysUTC(start, 1);
+            }
+            return count;
+        };
+
+        // Lista de días hábiles (YYYY-MM-DD) entre start y end INCLUSIVO
+        const listBusinessDaysInclusive = (startStr, endStr) => {
+            const out = [];
+            if (!startStr || !endStr) return out;
+            let cur = fromYMD(startStr);
+            const end = fromYMD(endStr);
+            if (cur > end) return out;
+            while (cur <= end) {
+                if (isWorkingDay(cur)) out.push(toYMD(cur));
+                cur = addDaysUTC(cur, 1);
+            }
+            return out;
+        };
+
+        // Lista de días hábiles desde el día siguiente a 'fromStr' hasta 'toStr' inclusive
+        const listBusinessDaysAfterDate = (fromStr, toStr) => {
+            const out = [];
+            if (!fromStr || !toStr) return out;
+            let cur = addDaysUTC(fromYMD(fromStr), 1);
+            const end = fromYMD(toStr);
+            if (cur > end) return out;
+            while (cur <= end) {
+                if (isWorkingDay(cur)) out.push(toYMD(cur));
+                cur = addDaysUTC(cur, 1);
+            }
+            return out;
+        };
+
+        /** ----------------------------
+         * Construcción de disabledDates
+         * ---------------------------- */
         const etapas = vacante.etapasVacante ?? [];
 
         // primera etapa con fechaInicio definida
         const primeraConInicio = etapas.find((e) => e.fechaInicio);
         const startDateStr = primeraConInicio ? toYMD(primeraConInicio.fechaInicio) : null;
 
-        // última etapa “conocida” (recorremos al revés buscando fechaCumplimiento || fechaFinalizacion)
+        // última etapa “conocida” (fechaCumplimiento || fechaFinalizacion)
         const ultima = [...etapas].reverse().find((e) => e.fechaCumplimiento || e.fechaFinalizacion);
         const endDateStr = ultima
             ? toYMD(ultima.fechaCumplimiento || ultima.fechaFinalizacion)
             : null;
 
-        // 2) Fines de semana dentro del rango (inclusive)
+        // Fines de semana dentro del rango
         const disabledWeekends = new Set();
         if (startDateStr && endDateStr) {
-            let cursor = new Date(startDateStr + "T00:00:00.000Z");
-            const end = new Date(endDateStr + "T00:00:00.000Z");
+            let cursor = fromYMD(startDateStr);
+            const end = fromYMD(endDateStr);
             while (cursor <= end) {
-                const dow = cursor.getUTCDay(); // 0 = domingo, 6 = sábado
-                if (dow === 0 || dow === 6) {
-                    disabledWeekends.add(toYMD(cursor));
-                }
-                cursor.setUTCDate(cursor.getUTCDate() + 1);
+                const dow = cursor.getUTCDay();
+                if (dow === 0 || dow === 6) disabledWeekends.add(toYMD(cursor));
+                cursor = addDaysUTC(cursor, 1);
             }
         }
 
-        // 3) Feriados asociados a la vacante
-        const disabledHolidays = new Set(
-            (vacante.diasNoLaborales ?? []).map((vdl) => toYMD(vdl.diaNoLaboral.fecha))
-        );
+        // Feriados asociados
+        const disabledHolidays = new Set(holidaySet);
 
-        // 4) Unión (sin duplicados)
+        // Unión
         const disabledDates = Array.from(new Set([...disabledWeekends, ...disabledHolidays])).sort();
 
         /** -----------------------------------
-         *  Normalización de fechas para el front
-         *  ----------------------------------- */
+         * Normalización + métricas por etapa
+         * ----------------------------------- */
         vacante.fechaInicio = vacante.fechaInicio ? toYMD(vacante.fechaInicio) : null;
+
+        // Sets globales para días únicos
+        const coveredBusinessDays = new Set();
+        const coveredDelayDays = new Set();
 
         vacante.etapasVacante.forEach((eV) => {
             eV.fechaInicio = eV.fechaInicio ? toYMD(eV.fechaInicio) : null;
             eV.fechaFinalizacion = eV.fechaFinalizacion ? toYMD(eV.fechaFinalizacion) : null;
             eV.fechaCumplimiento = eV.fechaCumplimiento ? toYMD(eV.fechaCumplimiento) : null;
 
-            // etiquetas legibles
+            // Etiquetas legibles
             eV.fechaInicioLabel = eV.fechaInicio
                 ? dayjs(eV.fechaInicio).format("ddd, DD [de] MMM [de] YYYY")
                 : null;
@@ -274,20 +339,66 @@ async function getById(id) {
             eV.fechaCumplimientoLabel = eV.fechaCumplimiento
                 ? dayjs(eV.fechaCumplimiento).format("ddd, DD [de] MMM [de] YYYY")
                 : null;
+
+            // ---- Métricas hábiles por etapa ----
+            const totalDiasReal = eV.fechaInicio && eV.fechaCumplimiento
+                ? countBusinessDaysInclusive(eV.fechaInicio, eV.fechaCumplimiento)
+                : 0;
+
+            const totalDiasPlan = eV.fechaInicio && eV.fechaFinalizacion
+                ? countBusinessDaysInclusive(eV.fechaInicio, eV.fechaFinalizacion)
+                : 0;
+
+            eV.totalDias = totalDiasReal || totalDiasPlan || 0;
+
+            // Retraso hábil (si cumplió después del plan)
+            let retraso = 0;
+            if (eV.fechaCumplimiento && eV.fechaFinalizacion) {
+                if (fromYMD(eV.fechaCumplimiento) > fromYMD(eV.fechaFinalizacion)) {
+                    const delayDays = listBusinessDaysAfterDate(eV.fechaFinalizacion, eV.fechaCumplimiento);
+                    retraso = delayDays.length;
+                    // Agregar al set global de retrasos únicos
+                    delayDays.forEach((d) => coveredDelayDays.add(d));
+                }
+            }
+            eV.totalRetrasoDias = retraso;
+
+            // ---- Contribución de días hábiles ÚNICOS por etapa ----
+            const endForElapsed = eV.fechaCumplimiento || eV.fechaFinalizacion;
+            const businessDaysOfStage = listBusinessDaysInclusive(eV.fechaInicio, endForElapsed);
+
+            let contributes = 0;
+            for (const ymd of businessDaysOfStage) {
+                if (!coveredBusinessDays.has(ymd)) {
+                    coveredBusinessDays.add(ymd);
+                    contributes++;
+                }
+            }
+            eV.totalDiasUnicosContribuidos = contributes;
         });
+
+        // —— Totales de proceso ——
+        const totalDiasSumadoEtapas = (vacante.etapasVacante ?? [])
+            .reduce((acc, it) => acc + (Number(it.totalDias) || 0), 0);
+
+        const totalDiasHabilesUnicos = coveredBusinessDays.size;
+        const totalDiasRetrasosUnicos = coveredDelayDays.size;
 
         /** Respuesta */
         return {
             data: {
                 ...vacante,
-                disabledDates, // <- array plano para usar directamente en el calendario
+                disabledDates,
             },
             meta: {
                 total: 1,
-                // (Opcional) desglose si querés usar estilos distintos en el front
                 disabledWeekends: Array.from(disabledWeekends).sort(),
                 disabledHolidays: Array.from(disabledHolidays).sort(),
-                range: { startDate: startDateStr, endDate: endDateStr }, // útil para debug/UX
+                range: { startDate: startDateStr, endDate: endDateStr },
+                // Totales
+                totalDiasSumadoEtapas,
+                totalDiasHabilesUnicos,
+                totalDiasRetrasosUnicos,
             },
         };
     } catch (e) {
@@ -305,11 +416,12 @@ async function getById(id) {
  * - fechaInicio: string (YYYY-MM-DD) o Date (requerido)
  * - departamentoId: string (UUID)
  * - sedeId: string (UUID)
+ * - aumentoDotacion: boolean
  */
 async function post(input) {
     try {
         const currentUser = getCurrentUser()
-        const { nombre, procesoId, fechaInicio, departamentoId, sedeId } = input
+        const { nombre, procesoId, fechaInicio, departamentoId, sedeId, aumentoDotacion } = input
 
         const nombreTrim = String(nombre).trim()
         const fechaInicioDate = toDateOnly(fechaInicio)
@@ -421,6 +533,7 @@ async function post(input) {
                     activo: true,
                     uc: currentUser.id,
                     um: currentUser.id,
+                    aumentoDotacion
                 },
                 select: { id: true },
             })
@@ -497,12 +610,14 @@ async function post(input) {
  * @param {string} params.departamentoId UUID del departamento.
  * @param {string} params.sedeId UUID de la sede.
  * @param {string} params.fechaInicio Fecha de inicio.
+ * @param {boolean} params.aumentoDotacion Si es un aumento de dotacion.
+ * @param {'promocion_interna', 'traslado', 'contratacion_externa'} params.resultado Tipo de resultado
  * @returns {Promise<Vacante>}
  */
 async function patch(id, input) {
     try {
         const currentUser = getCurrentUser()
-        const data = pick(input, PATCH_ALLOWED)
+        let data = pick(input, PATCH_ALLOWED)
 
         // Cargar vacante actual (con empresa, proceso y etapas)
         const current = await prisma.vacante.findFirst({
@@ -520,6 +635,10 @@ async function patch(id, input) {
         })
         if (!current) {
             throw new TalentFlowError('Vacante no encontrada o no pertenece a la empresa del usuario.', 404)
+        }
+
+        if(current.estado === 'finalizada') {
+            data = pick(input, ['nombre', 'departamentoId', 'sedeId', 'fechaInicio', 'aumentoDotacion', 'resultado'])
         }
 
         // Normalizaciones y validaciones específicas
@@ -595,6 +714,8 @@ async function patch(id, input) {
                     ...(data.departamentoId !== undefined ? { departamentoId: data.departamentoId ?? null } : {}),
                     ...(data.sedeId !== undefined ? { sedeId: data.sedeId ?? null } : {}),
                     ...(data.estado !== undefined ? { estado: data.estado } : {}),
+                    ...(data.aumentoDotacion !== undefined ? { aumentoDotacion: data.aumentoDotacion } : {}),
+                    ...(data.resultado !== undefined ? { resultado: data.resultado } : {}),
                     um: currentUser.id,
                     // fechaInicio no cambió o no se envió
                 },

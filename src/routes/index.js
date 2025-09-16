@@ -10,6 +10,7 @@ import etapaRoute from './etapaRoute.js'
 import procesoRoute from './procesoRoute.js'
 import vacanteRoute from './vacanteRoute.js'
 import vacanteEtapaComentarioRoutes from './vacanteEtapaComentarioRoutes.js'
+import reporteRoute from './reporteRoute.js'
 import { authenticateJWT } from '../middlewares/authMiddleware.js'
 
 /**
@@ -36,5 +37,6 @@ router.use('/etapas', authenticateJWT, etapaRoute)
 router.use('/procesos', authenticateJWT, procesoRoute)
 router.use('/vacantes', authenticateJWT, vacanteRoute)
 router.use('/comentarios', authenticateJWT, vacanteEtapaComentarioRoutes)
+router.use('/reportes', authenticateJWT, reporteRoute)
 
 export default router

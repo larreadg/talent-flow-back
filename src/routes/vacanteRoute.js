@@ -81,6 +81,10 @@ router.post('/',
             .exists().withMessage('sedeId es requerido')
             .bail()
             .isUUID().withMessage('sedeId debe ser un UUID válido'),
+        body('aumentoDotacion')
+            .exists().withMessage('aumentoDotacion es requerido')
+            .bail()
+            .isBoolean().withMessage('aumentoDotacion debe ser true o false'),
     ],
     verifyRol(TF_ADMINS),
     VacanteController.post
@@ -100,7 +104,14 @@ router.patch('/:id',
             .isISO8601({ strict: true }).withMessage('fechaInicio debe ser ISO-8601 (YYYY-MM-DD)').bail()
             .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Use formato YYYY-MM-DD'),
         body('estado')
-            .isString().isIn(['abierta', 'pausada', 'cerrada', 'cancelada']),
+            .isString().isIn(['abierta', 'pausada', 'finalizada', 'cancelada']),
+        body('aumentoDotacion')
+            .exists().withMessage('aumentoDotacion es requerido')
+            .bail()
+            .isBoolean().withMessage('aumentoDotacion debe ser true o false'),
+        body('resultado')
+            .optional()
+            .isIn(['promocion_interna', 'traslado', 'contratacion_externa']).withMessage('resultado debe ser promocion_interna, traslado o contratacion_externa'),
     ],
     verifyRol(TF_ADMINS),
     VacanteController.patch
