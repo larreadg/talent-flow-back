@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/es.js'
 import utc from 'dayjs/plugin/utc.js'
 import localizedFormat from 'dayjs/plugin/localizedFormat.js'
-
 import { prisma } from '../prismaClient.js'
 import { mapPrismaError } from '../utils/error.js'
 import { getCurrentUser } from '../middlewares/requestContext.js'
@@ -332,11 +331,19 @@ async function generarReporte({ estados = null, departamentos = null, sedes = nu
                     }
 
                     // === Color condicional (solo C..I) ===
-                    const isLate =
-                        !!(ev.fechaCumplimiento && ev.fechaFinalizacion) &&
-                        dayjs.utc(ev.fechaCumplimiento).isAfter(dayjs.utc(ev.fechaFinalizacion));
+                    const cump = ev.fechaCumplimiento ? dayjs.utc(ev.fechaCumplimiento) : null;
+                    const fin  = ev.fechaFinalizacion ? dayjs.utc(ev.fechaFinalizacion) : null;
 
-                    const fontColor = isLate ? 'FFFF0000' : 'FF008000'; // rojo / verde
+                    let fontColor = 'FF000000'; // negro por defecto (cuando cump = null)
+
+                    if (cump) {
+                    if (fin) {
+                        fontColor = cump.isAfter(fin) ? 'FFFF0000' : 'FF008000'; // rojo : verde
+                    } else {
+                        fontColor = 'FF008000'; // sin fechaFinalizacion → no consideramos atraso
+                    }
+                    }
+
                     // Solo C..I (3..9)
                     for (const col of [3, 4, 5, 6, 7, 8, 9]) {
                         const cell = r.getCell(col);
@@ -424,4 +431,357 @@ async function generarReporte({ estados = null, departamentos = null, sedes = nu
     }
 }
 
-export const ReporteService = { generarReporte };
+/**
+ * Resumen de vacantes de la empresa dentro/fuera del SLA máximo de Proceso (en días hábiles).
+ * - Días hábiles = excluye sábados, domingos y DiaNoLaboral de la empresa.
+ * - Inicio del proceso: mínima fechaInicio entre sus etapas; si no hay, usa vacante.fechaInicio; si tampoco hay, usa vacante.fc.
+ * - Fin:
+ *    * si vacante está finalizada: máxima fechaCumplimiento; si falta, usa máxima fechaFinalizacion; si no hay, vacante.fc
+ *    * si vacante está abierta/pausada/etc.: min(hoy, fechaCorte opcional)
+ * - Solo cuentan vacantes cuyo Proceso tiene slaMaximoDias != null (las otras van a `sinSLA`).
+ *
+ * @param {{ estados?: string[]|string, departamentos?: string[]|string, sedes?: string[]|string, fechaCorte?: string }} params
+ *   - fechaCorte: 'YYYY-MM-DD' (opcional), por defecto hoy (UTC date-only).
+ * @returns {Promise<{
+*   empresaId: string,
+*   fechaCorte: string,
+*   totalVacantes: number,
+*   consideradas: number,
+*   sinSLA: number,
+*   dentroSLA: number,
+*   fueraSLA: number,
+*   procesos: Array<{ procesoId: string, nombre: string, slaMaximoDias: number, consideradas: number, dentroSLA: number, fueraSLA: number }>
+* }>}
+*/
+async function getSLAResumenMaximo({ estados = null, departamentos = null, sedes = null, fechaCorte = null } = {}) {
+    try {
+        const currentUser = getCurrentUser()
+        const toYMD = (d) => (d ? dayjs.utc(d).format('YYYY-MM-DD') : null)
+        const todayISO = dayjs.utc().format('YYYY-MM-DD')
+        const corteISO = fechaCorte ? dayjs.utc(fechaCorte).format('YYYY-MM-DD') : todayISO
+
+        // ====== Filtros coherentes con tu estilo ======
+        const estadosList = normalizeList(estados)
+        const departamentosList = normalizeList(departamentos)
+        const sedesList = normalizeList(sedes)
+
+        const baseWhere = { empresaId: currentUser.empresaId, activo: true, estado: { in: ['abierta', 'finalizada'] } }
+        const and = [baseWhere]
+        if (estadosList.length) and.push({ estado: { in: estadosList } })
+        if (departamentosList.length) and.push({ departamentoId: { in: departamentosList } })
+        if (sedesList.length) and.push({ sedeId: { in: sedesList } })
+        const where = and.length > 1 ? { AND: and } : baseWhere
+
+        // Traemos lo que necesitamos: Proceso con slaMaximoDias, etapas (fechas), y no laborables de la EMPRESA
+        const vacantes = await prisma.vacante.findMany({
+            where,
+            select: {
+                id: true,
+                estado: true,
+                fc: true,
+                fechaInicio: true,
+                proceso: { select: { id: true, nombre: true, slaMaximoDias: true } },
+                etapasVacante: {
+                    orderBy: { procesoEtapa: { orden: 'asc' } },
+                    select: { fechaInicio: true, fechaFinalizacion: true, fechaCumplimiento: true },
+                },
+            },
+        })
+
+        if (!vacantes.length) {
+            return {
+                empresaId: currentUser.empresaId,
+                fechaCorte: corteISO,
+                totalVacantes: 0,
+                consideradas: 0,
+                sinSLA: 0,
+                dentroSLA: 0,
+                fueraSLA: 0,
+                procesos: [],
+            }
+        }
+
+        // Determinar rango mínimo para traer feriados una sola vez
+        let minInicioGlobal = corteISO
+        for (const v of vacantes) {
+            const etapas = v.etapasVacante ?? []
+            const minEtapaInicio = etapas.map(e => toYMD(e.fechaInicio)).filter(Boolean).sort()[0]
+            const inicio = minEtapaInicio ?? toYMD(v.fechaInicio) ?? toYMD(v.fc)
+            if (inicio && inicio < minInicioGlobal) minInicioGlobal = inicio
+        }
+
+        // Días no laborables (feriados) de la EMPRESA en [minInicioGlobal, corteISO]
+        const feriados = await prisma.diaNoLaboral.findMany({
+            where: { empresaId: currentUser.empresaId, fecha: { gte: new Date(minInicioGlobal), lte: new Date(corteISO) } },
+            select: { fecha: true },
+        })
+        const feriadoSet = new Set(feriados.map(f => dayjs.utc(f.fecha).format('YYYY-MM-DD')))
+
+        // Helpers de hábiles (basados en tu approach de utilidades/servicios)
+        const isWorkingDayYMD = (ymd) => {
+            const dow = dayjs.utc(ymd).day() // 0=Dom..6=Sáb
+            if (dow === 0 || dow === 6) return false
+            return !feriadoSet.has(dayjs.utc(ymd).format('YYYY-MM-DD'))
+        }
+        // Cuenta días hábiles INCLUSIVOS entre dos YMD
+        const countBusinessDaysInclusive = (startYmd, endYmd) => {
+            if (!startYmd || !endYmd) return 0
+            const start = dayjs.utc(startYmd)
+            const end = dayjs.utc(endYmd)
+            if (end.isBefore(start, 'day')) return 0
+            let d = start
+            let count = 0
+            while (!d.isAfter(end, 'day')) {
+                if (isWorkingDayYMD(d)) count++
+                d = d.add(1, 'day')
+            }
+            return count
+        }
+
+        // Acumuladores
+        let sinSLA = 0, dentroSLA = 0, fueraSLA = 0
+        const procMap = new Map() // procesoId -> { ... }
+
+        // Recorremos vacantes
+        for (const v of vacantes) {
+            const p = v.proceso
+            if (!p || p.slaMaximoDias == null) {
+                sinSLA++
+                continue
+            }
+
+            const etapas = v.etapasVacante ?? []
+            // Inicio
+            const minEtapaInicio = etapas.map(e => toYMD(e.fechaInicio)).filter(Boolean).sort()[0]
+            const inicio = minEtapaInicio ?? toYMD(v.fechaInicio) ?? toYMD(v.fc)
+
+            // Fin
+            const maxCumpl = etapas.map(e => toYMD(e.fechaCumplimiento)).filter(Boolean).sort().slice(-1)[0]
+            const maxPlan = etapas.map(e => toYMD(e.fechaFinalizacion)).filter(Boolean).sort().slice(-1)[0]
+            const cerrada = (v.estado === 'finalizada' || v.estado === 'cerrada' || v.estado === 'CERRADA' || v.estado === 'CERRADA_OK')
+            let fin = cerrada ? (maxCumpl ?? maxPlan ?? toYMD(v.fc)) : corteISO
+            if (!fin) fin = corteISO
+            if (fin > corteISO) fin = corteISO
+
+            // Días hábiles transcurridos (INCLUSIVO)
+            const diasHabiles = countBusinessDaysInclusive(inicio, fin)
+
+            const dentro = diasHabiles <= Number(p.slaMaximoDias)
+            if (dentro) dentroSLA++; else fueraSLA++
+
+            // Detalle por proceso
+            if (!procMap.has(p.id)) {
+                procMap.set(p.id, {
+                    procesoId: p.id,
+                    nombre: p.nombre,
+                    slaMaximoDias: Number(p.slaMaximoDias),
+                    consideradas: 0,
+                    dentroSLA: 0,
+                    fueraSLA: 0,
+                })
+            }
+            const slot = procMap.get(p.id)
+            slot.consideradas++
+            if (dentro) slot.dentroSLA++; else slot.fueraSLA++
+        }
+
+        const consideradas = dentroSLA + fueraSLA
+
+        return {
+            empresaId: currentUser.empresaId,
+            fechaCorte: corteISO,
+            totalVacantes: vacantes.length,
+            consideradas,
+            sinSLA,
+            dentroSLA,
+            fueraSLA,
+            procesos: Array.from(procMap.values()).sort((a, b) => a.nombre.localeCompare(b.nombre)),
+        }
+    } catch (e) {
+        throw mapPrismaError(e, { resource: 'Reporte SLA Máximo' })
+    }
+}
+
+/**
+ * Top N de departamentos por cantidad de etapas incumplidas.
+ * Incumplimiento: fechaCumplimiento > fechaFinalizacion.
+ *
+ * Filtros opcionales:
+ *  - estados: string|string[]
+ *  - departamentos: string|string[]
+ *  - sedes: string|string[]
+ *  - fechaDesde / fechaHasta: rango sobre fechaCumplimiento (YYYY-MM-DD)
+ *
+ * Respuesta:
+ *  {
+ *    totalIncumplimientos: number,
+ *    items: [{ departamentoId, nombre, incumplimientos, pct }]
+ *  }
+ */
+export async function getTopDepartamentosIncumplimientoEtapas({
+    limit = 5,
+    estados = null,
+    departamentos = null,
+    sedes = null,
+    fechaDesde = null,
+    fechaHasta = null
+} = {}) {
+    try {
+        const currentUser = getCurrentUser()
+
+        const estadosList = normalizeList(estados)
+        const departamentosList = normalizeList(departamentos)
+        const sedesList = normalizeList(sedes)
+
+        // Rango de fechas (sobre fechaCumplimiento) si viene
+        const desde = fechaDesde ? dayjs.utc(fechaDesde).startOf('day').toDate() : undefined
+        const hasta = fechaHasta ? dayjs.utc(fechaHasta).endOf('day').toDate() : undefined
+
+        // WHERE de la vacante (empresa + filtros de alto nivel)
+        const vacanteWhere = {
+            empresaId: currentUser.empresaId,
+            activo: true,
+            ...(estadosList.length ? { estado: { in: estadosList } } : {}),
+            ...(departamentosList.length ? { departamentoId: { in: departamentosList } } : {}),
+            ...(sedesList.length ? { sedeId: { in: sedesList } } : {}),
+        }
+
+        // Traigo SOLO etapas con ambas fechas presentes; el > lo evaluamos en JS
+        const etapas = await prisma.vacanteEtapa.findMany({
+            where: {
+                AND: [
+                    { fechaCumplimiento: { not: null } },
+                    { fechaFinalizacion: { not: null } },
+                    ...(desde ? [{ fechaCumplimiento: { gte: desde } }] : []),
+                    ...(hasta ? [{ fechaCumplimiento: { lte: hasta } }] : []),
+                ],
+                vacante: vacanteWhere,
+            },
+            select: {
+                fechaCumplimiento: true,
+                fechaFinalizacion: true,
+                vacante: {
+                    select: {
+                        departamentoId: true,
+                        departamento: { select: { nombre: true } }, // relación existente en tu código
+                    },
+                },
+            },
+        })
+
+        // Agrupar y contar incumplimientos por departamento
+        const counts = new Map() // depId -> { nombre, count }
+        let totalIncumplimientos = 0
+
+        for (const e of etapas) {
+            const fc = e.fechaCumplimiento
+            const ff = e.fechaFinalizacion
+            if (fc && ff && dayjs.utc(fc).isAfter(dayjs.utc(ff))) {
+                const depId = e.vacante.departamentoId ?? 'SIN_DEP'
+                const nombre = e.vacante.departamento?.nombre ?? 'Sin Departamento'
+                const cur = counts.get(depId) ?? { nombre, count: 0 }
+                cur.count += 1
+                counts.set(depId, cur)
+                totalIncumplimientos += 1
+            }
+        }
+
+        // Ordenar DESC por count y tomar top N
+        const itemsSorted = Array.from(counts.entries())
+            .sort((a, b) => (b[1].count - a[1].count) || a[1].nombre.localeCompare(b[1].nombre))
+            .slice(0, Number(limit) || 5)
+            .map(([departamentoId, v]) => ({
+                departamentoId,
+                nombre: v.nombre,
+                incumplimientos: v.count,
+                pct: totalIncumplimientos ? Math.round((v.count / totalIncumplimientos) * 100) : 0,
+            }))
+
+        return {
+            totalIncumplimientos,
+            items: itemsSorted,
+        }
+    } catch (err) {
+        throw mapPrismaError(err, { resource: 'Top Departamentos Incumplimientos' })
+    }
+}
+
+/**
+ * Array de 12 elementos con resumen mensual de vacantes abiertas, finalizadas y aumentoDotacion,
+ * tomando como mes de referencia el de la vacante más nueva (por fechaInicio).
+ */
+async function getResumenVacantesMensualUltimos12Meses() {
+    try {
+        const currentUser = getCurrentUser();
+
+        const vacanteMasNueva = await prisma.vacante.findFirst({
+            where: {
+                empresaId: currentUser.empresaId,
+                activo: true,
+                estado: { in: ['abierta', 'finalizada'] },
+            },
+            orderBy: { fechaInicio: 'desc' },
+            select: { fechaInicio: true },
+        });
+
+        const mesRef = vacanteMasNueva
+            ? dayjs.utc(vacanteMasNueva.fechaInicio).startOf('month')
+            : dayjs.utc().startOf('month');
+
+        const inicioRango = mesRef.subtract(11, 'month').startOf('month');
+        const finRango = mesRef.endOf('month');
+
+        const vacantes = await prisma.vacante.findMany({
+            where: {
+                empresaId: currentUser.empresaId,
+                activo: true,
+                estado: { in: ['abierta', 'finalizada'] },
+                fechaInicio: {
+                    gte: inicioRango.toDate(),
+                    lte: finRango.toDate(),
+                },
+            },
+            select: {
+                id: true,
+                estado: true,
+                aumentoDotacion: true,
+                fechaInicio: true,
+            },
+        });
+
+        const meses = [];
+        for (let i = 0; i < 12; i++) {
+            const base = inicioRango.add(i, 'month');
+            meses.push({
+                label: base.format('MMM YYYY'),
+                abiertas: 0,
+                finalizadas: 0,
+                aumentoDotacion: 0,
+            });
+        }
+
+        for (const v of vacantes) {
+            const fiMes = dayjs.utc(v.fechaInicio).startOf('month');
+            const idx = fiMes.diff(inicioRango, 'month');
+            if (idx >= 0 && idx < 12) {
+                if (v.estado === 'abierta') meses[idx].abiertas++;
+                if (v.estado === 'finalizada') meses[idx].finalizadas++;
+                if (v.aumentoDotacion) meses[idx].aumentoDotacion++;
+            }
+        }
+
+        return meses;
+    } catch (e) {
+        throw mapPrismaError(e, { resource: 'Resumen Vacantes Mensual 12m' });
+    }
+}
+
+
+
+
+export const ReporteService = {
+    generarReporte,
+    getSLAResumenMaximo,
+    getTopDepartamentosIncumplimientoEtapas,
+    getResumenVacantesMensualUltimos12Meses
+}

@@ -110,8 +110,9 @@ router.patch('/:id',
             .bail()
             .isBoolean().withMessage('aumentoDotacion debe ser true o false'),
         body('resultado')
-            .optional()
-            .isIn(['promocion_interna', 'traslado', 'contratacion_externa']).withMessage('resultado debe ser promocion_interna, traslado o contratacion_externa'),
+            .optional({ nullable: true }) // permite que falte o sea null
+            .isIn(['promocion_interna', 'traslado', 'contratacion_externa'])
+            .withMessage('resultado debe ser promocion_interna, traslado o contratacion_externa')
     ],
     verifyRol(TF_ADMINS),
     VacanteController.patch

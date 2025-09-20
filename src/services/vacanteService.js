@@ -183,7 +183,7 @@ async function getById(id) {
 
         /** Cargar vacante + relaciones necesarias */
         let vacante = await prisma.vacante.findFirst({
-            where: { id, empresaId: currentUser.empresaId, estado: { in: ["abierta", "finalizada"] } },
+            where: { id, empresaId: currentUser.empresaId, estado: { in: ['abierta', 'finalizada', 'pausada'] } },
             include: {
                 proceso: { select: { nombre: true } },
                 departamento: { select: { nombre: true } },
@@ -1029,6 +1029,8 @@ async function completarEtapa(input) {
             }
         })
         if (!etapa) throw new TalentFlowError('La etapa indicada no existe.', 404)
+ 
+        if(etapa.vacante.estado !== 'abierta') throw new TalentFlowError('La vacante debe estar abierta', 409)
 
         // Traer TODAS las etapas de esa vacante, ordenadas
         const etapas = await prisma.vacanteEtapa.findMany({

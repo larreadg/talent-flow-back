@@ -253,6 +253,7 @@ model Proceso {
   nombre    String
   descripcion String?
   activo    Boolean @default(true)
+  slaMaximoDias Int? @db.SmallInt
 
   uc String?
   fc DateTime @default(now()) @db.Timestamptz(6)
