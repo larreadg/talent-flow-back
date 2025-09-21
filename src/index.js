@@ -8,6 +8,7 @@ import { contextMiddleware } from './middlewares/requestContext.js'
 const app = express()
 app.use(cors())
 app.use(bodyParser.json())
+app.set('trust proxy', '10.129.2.40');
 
 app.use(contextMiddleware)
 

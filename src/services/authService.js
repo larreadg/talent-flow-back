@@ -1,7 +1,7 @@
 import { prisma } from '../prismaClient.js'
 
 import { mapPrismaError, TalentFlowError } from '../utils/error.js'
-import { appName, pick, validatePasswordPolicy, verifyPassword } from '../utils/utils.js'
+import { appName, hashPassword, pick, validatePasswordPolicy, verifyPassword } from '../utils/utils.js'
 import { verifyCaptcha } from '../utils/captcha.js'
 import { readFile } from 'node:fs/promises'
 import jwt from 'jsonwebtoken'
@@ -20,11 +20,10 @@ import { enviarCorreo } from './emailService.js'
  */
 export async function verifyAndConsumeUsuarioToken({ token, tipo }) {
   try {
-    const now = new Date()
+    const now = dayjs().toDate()
 
     return await prisma.$transaction(async (tx) => {
       // 1) Buscar el token vigente y obtener usuarioId
-      console.log(token)
       const rec = await tx.usuarioToken.findFirst({
         where: { id: token, tipo, expiresAt: { gte: now } },
         select: { id: true, usuarioId: true },
@@ -164,6 +163,7 @@ async function activateAccount({ pass, repeatPass, captcha, token, ip }) {
       throw new TalentFlowError('Las contraseñas no coinciden', 400)
     }
 
+    console.log({ pass, repeatPass, captcha, token, ip })
     // Política
     const policyErrors = validatePasswordPolicy(pass)
     if (policyErrors.length) {
