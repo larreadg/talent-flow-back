@@ -252,13 +252,13 @@ async function post({ email, nombre, apellido, telefono, rolId, empresaId }) {
       }
     })
 
-    const fileUrl = new URL('../resources/templateEmailCrearCuenta.html', import.meta.url)
-    let emailTemplate = await readFile(fileUrl, 'utf8')
-    emailTemplate = emailTemplate.replace(/\$nombre/g, created.nombre)
-    emailTemplate = emailTemplate.replace(/\$apellido/g, created.apellido)
-    emailTemplate = emailTemplate.replace(/\$activation_url/g, `${process.env.APP_FROM}/#/auth/activate-account?token=${token.id}`)
+    // const fileUrl = new URL('../resources/templateEmailCrearCuenta.html', import.meta.url)
+    // let emailTemplate = await readFile(fileUrl, 'utf8')
+    // emailTemplate = emailTemplate.replace(/\$nombre/g, created.nombre)
+    // emailTemplate = emailTemplate.replace(/\$apellido/g, created.apellido)
+    // emailTemplate = emailTemplate.replace(/\$activation_url/g, `${process.env.APP_FROM}/#/auth/activate-account?token=${token.id}`)
 
-    await enviarCorreo({ to: created.email, html: emailTemplate, subject: `${appName} - Activación de cuenta` })
+    // await enviarCorreo({ to: created.email, html: emailTemplate, subject: `${appName} - Activación de cuenta` })
 
   } catch (e) {
     throw mapPrismaError(e, { resource: 'Usuario' })
