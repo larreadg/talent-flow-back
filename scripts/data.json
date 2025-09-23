@@ -1,0 +1,3518 @@
+[
+    {
+        "vacante": "Analista Jr. De Tesoreria",
+        "fecheInicio": "2025-04-10",
+        "estado": "finalizada",
+        "area": "Finanzas",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-04-10",
+                "fechaFinalizacion": "2025-04-21",
+                "fechaCumplimiento": "2025-04-11"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-11",
+                "fechaFinalizacion": "2025-04-16",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-25",
+                "fechaFinalizacion": "2025-05-05",
+                "fechaCumplimiento": "2025-04-29"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-29",
+                "fechaFinalizacion": "2025-04-28",
+                "fechaCumplimiento": "2025-04-30"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-19",
+                "fechaFinalizacion": "2025-05-20",
+                "fechaCumplimiento": "2025-05-19"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Jr. de Registro Curricular",
+        "fecheInicio": "2025-04-02",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-04-02",
+                "fechaFinalizacion": "2025-04-11",
+                "fechaCumplimiento": "2025-04-07"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-07",
+                "fechaFinalizacion": "2025-04-10",
+                "fechaCumplimiento": "2025-04-10"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-10",
+                "fechaFinalizacion": "2025-04-18",
+                "fechaCumplimiento": "2025-04-15"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-15",
+                "fechaFinalizacion": "2025-04-14",
+                "fechaCumplimiento": "2025-04-11"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-11",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-23"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-23",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-24"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-26",
+                "fechaFinalizacion": "2025-05-27",
+                "fechaCumplimiento": "2025-05-26"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Junior Contable",
+        "fecheInicio": "2025-07-09",
+        "estado": "finalizada",
+        "area": "Finanzas",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-07-09",
+                "fechaFinalizacion": "2025-07-18",
+                "fechaCumplimiento": "2025-07-14"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-07-14",
+                "fechaFinalizacion": "2025-07-17",
+                "fechaCumplimiento": "2025-07-15"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-07-15",
+                "fechaFinalizacion": "2025-07-23",
+                "fechaCumplimiento": "2025-07-17"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Junior de Archivo",
+        "fecheInicio": "2025-04-02",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-04-02",
+                "fechaFinalizacion": "2025-04-11",
+                "fechaCumplimiento": "2025-04-07"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-07",
+                "fechaFinalizacion": "2025-04-10",
+                "fechaCumplimiento": "2025-04-10"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-10",
+                "fechaFinalizacion": "2025-04-18",
+                "fechaCumplimiento": "2025-04-15"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-15",
+                "fechaFinalizacion": "2025-04-14",
+                "fechaCumplimiento": "2025-04-11"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-11",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-23"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-23",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-24"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-24",
+                "fechaFinalizacion": "2025-04-25",
+                "fechaCumplimiento": "2025-04-24"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Junior de Extensión Universitaria y Vinculación con el Entorno",
+        "fecheInicio": "2025-04-03",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-04-03",
+                "fechaFinalizacion": "2025-04-14",
+                "fechaCumplimiento": "2025-04-07"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-07",
+                "fechaFinalizacion": "2025-04-10",
+                "fechaCumplimiento": "2025-04-09"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-09",
+                "fechaFinalizacion": "2025-04-17",
+                "fechaCumplimiento": "2025-04-09"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-09",
+                "fechaFinalizacion": "2025-04-10",
+                "fechaCumplimiento": "2025-04-10"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-10",
+                "fechaFinalizacion": "2025-04-22",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-22",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-23",
+                "fechaFinalizacion": "2025-04-24",
+                "fechaCumplimiento": "2025-04-23"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Junior de Gestión de Activos Temporal 1 año.",
+        "fecheInicio": "2025-07-09",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-07-09",
+                "fechaFinalizacion": "2025-07-18",
+                "fechaCumplimiento": "2025-07-14"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-07-14",
+                "fechaFinalizacion": "2025-07-17",
+                "fechaCumplimiento": "2025-07-15"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-07-15",
+                "fechaFinalizacion": "2025-07-23",
+                "fechaCumplimiento": "2025-07-21"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-07-21",
+                "fechaFinalizacion": "2025-07-22",
+                "fechaCumplimiento": "2025-07-21"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-07-21",
+                "fechaFinalizacion": "2025-07-31",
+                "fechaCumplimiento": "2025-07-30"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-07-30",
+                "fechaFinalizacion": "2025-07-31",
+                "fechaCumplimiento": "2025-08-04"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-04",
+                "fechaFinalizacion": "2025-08-04",
+                "fechaCumplimiento": "2025-08-04"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-04",
+                "fechaFinalizacion": "2025-08-05",
+                "fechaCumplimiento": "2025-08-05"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Junior de Mejora Continua",
+        "fecheInicio": "2025-02-27",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-27",
+                "fechaFinalizacion": "2025-03-10",
+                "fechaCumplimiento": "2025-03-26"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-26",
+                "fechaFinalizacion": "2025-03-31",
+                "fechaCumplimiento": "2025-03-27"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-03-27",
+                "fechaFinalizacion": "2025-04-04",
+                "fechaCumplimiento": "2025-04-02"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-31",
+                "fechaFinalizacion": "2025-04-01",
+                "fechaCumplimiento": "2025-04-01"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-01",
+                "fechaFinalizacion": "2025-04-11",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-23"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-23",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-28"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-28",
+                "fechaFinalizacion": "2025-04-29",
+                "fechaCumplimiento": "2025-04-29"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Pleno de Bienestar Estudiantil y Atención al Estudiante",
+        "fecheInicio": "2025-04-30",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-04-30",
+                "fechaFinalizacion": "2025-05-09",
+                "fechaCumplimiento": "2025-05-05"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-05-05",
+                "fechaFinalizacion": "2025-05-08",
+                "fechaCumplimiento": "2025-05-07"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-05-07",
+                "fechaFinalizacion": "2025-05-15",
+                "fechaCumplimiento": "2025-05-12"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-05-12",
+                "fechaFinalizacion": "2025-05-13",
+                "fechaCumplimiento": "2025-05-12"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-05-14",
+                "fechaFinalizacion": "2025-05-26",
+                "fechaCumplimiento": "2025-05-23"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-05-23",
+                "fechaFinalizacion": "2025-05-26",
+                "fechaCumplimiento": "2025-05-26"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-26",
+                "fechaFinalizacion": "2025-05-26",
+                "fechaCumplimiento": "2025-05-26"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-26",
+                "fechaFinalizacion": "2025-05-27",
+                "fechaCumplimiento": "2025-05-26"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Pleno de CRM Alvaro Vega",
+        "fecheInicio": "2025-08-08",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-08-08",
+                "fechaFinalizacion": "2025-08-19",
+                "fechaCumplimiento": "2025-08-08"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-08-08",
+                "fechaFinalizacion": "2025-08-13",
+                "fechaCumplimiento": "2025-08-11"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-08-11",
+                "fechaFinalizacion": "2025-08-19",
+                "fechaCumplimiento": "2025-08-13"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-08-13",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-14"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-08-14",
+                "fechaFinalizacion": "2025-08-26",
+                "fechaCumplimiento": "2025-08-19"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-19",
+                "fechaFinalizacion": "2025-08-20",
+                "fechaCumplimiento": "2025-08-22"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-22",
+                "fechaFinalizacion": "2025-08-22",
+                "fechaCumplimiento": "2025-08-22"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-22",
+                "fechaFinalizacion": "2025-08-25",
+                "fechaCumplimiento": "2025-08-22"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Pleno de CRM Irina Barua",
+        "fecheInicio": "2025-03-28",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-28",
+                "fechaFinalizacion": "2025-04-08",
+                "fechaCumplimiento": "2025-04-12"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-12",
+                "fechaFinalizacion": "2025-04-16",
+                "fechaCumplimiento": "2025-04-16"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-16",
+                "fechaFinalizacion": "2025-04-24",
+                "fechaCumplimiento": "2025-05-05"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-05-05",
+                "fechaFinalizacion": "2025-05-06",
+                "fechaCumplimiento": "2025-07-18"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-07-18",
+                "fechaFinalizacion": "2025-07-30",
+                "fechaCumplimiento": "2025-07-30"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-07-30",
+                "fechaFinalizacion": "2025-07-31",
+                "fechaCumplimiento": "2025-08-04"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-04",
+                "fechaFinalizacion": "2025-08-01",
+                "fechaCumplimiento": "2025-08-06"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-06",
+                "fechaFinalizacion": "2025-08-07",
+                "fechaCumplimiento": "2025-08-06"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Pleno de R&S",
+        "fecheInicio": "2024-12-16",
+        "estado": "finalizada",
+        "area": "Recursos Humanos",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2024-12-16",
+                "fechaFinalizacion": "2024-12-26",
+                "fechaCumplimiento": "2024-12-20"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2024-12-20",
+                "fechaFinalizacion": "2024-12-30",
+                "fechaCumplimiento": "2024-12-27"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2024-12-27",
+                "fechaFinalizacion": "2025-01-08",
+                "fechaCumplimiento": "2025-01-08"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-01-08",
+                "fechaFinalizacion": "2025-01-09",
+                "fechaCumplimiento": "2025-01-09"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-01-09",
+                "fechaFinalizacion": "2025-01-21",
+                "fechaCumplimiento": "2025-01-10"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-01-10",
+                "fechaFinalizacion": "2025-01-13",
+                "fechaCumplimiento": "2025-01-14"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-01-14",
+                "fechaFinalizacion": "2025-01-13",
+                "fechaCumplimiento": "2025-01-14"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-01-14",
+                "fechaFinalizacion": "2025-01-15",
+                "fechaCumplimiento": "2025-01-15"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Pleno de Supervisor Administrativo",
+        "fecheInicio": "2025-01-03",
+        "estado": "cancelada",
+        "area": "Finanzas",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-03",
+                "fechaFinalizacion": "2025-01-14",
+                "fechaCumplimiento": "2025-01-22"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-22",
+                "fechaFinalizacion": "2025-01-27",
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": "2025-03-11"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Semi Senior de BTL",
+        "fecheInicio": "2025-01-28",
+        "estado": "finalizada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-28",
+                "fechaFinalizacion": "2025-02-06",
+                "fechaCumplimiento": "2025-01-31"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-31",
+                "fechaFinalizacion": "2025-02-05",
+                "fechaCumplimiento": "2025-02-04"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-04",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-06"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-06",
+                "fechaFinalizacion": "2025-02-07",
+                "fechaCumplimiento": "2025-02-06"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-06",
+                "fechaFinalizacion": "2025-02-18",
+                "fechaCumplimiento": "2025-02-14"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-18",
+                "fechaCumplimiento": "2025-02-19"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-20",
+                "fechaCumplimiento": "2025-02-19"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-20",
+                "fechaCumplimiento": "2025-02-19"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Senior QA",
+        "fecheInicio": "2025-01-27",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-27",
+                "fechaFinalizacion": "2025-02-05",
+                "fechaCumplimiento": "2025-02-03"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-03",
+                "fechaFinalizacion": "2025-02-06",
+                "fechaCumplimiento": "2025-02-03"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-03",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-10"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-10",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-11"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-11",
+                "fechaFinalizacion": "2025-02-21",
+                "fechaCumplimiento": "2025-02-25"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-25",
+                "fechaFinalizacion": "2025-02-26",
+                "fechaCumplimiento": "2025-02-25"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-02-25",
+                "fechaFinalizacion": "2025-02-25",
+                "fechaCumplimiento": "2025-02-25"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-02-25",
+                "fechaFinalizacion": "2025-02-26",
+                "fechaCumplimiento": "2025-02-26"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Senior de CRM",
+        "fecheInicio": "2025-03-24",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-24",
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": "2025-03-31"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-31",
+                "fechaFinalizacion": "2025-04-03",
+                "fechaCumplimiento": "2025-04-14"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-14",
+                "fechaFinalizacion": "2025-04-22",
+                "fechaCumplimiento": "2025-04-21"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-21",
+                "fechaFinalizacion": "2025-04-22",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-05-02",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-05-12"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-12",
+                "fechaFinalizacion": "2025-05-09",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-19",
+                "fechaCumplimiento": "2025-06-19"
+            }
+        ]
+    },
+    {
+        "vacante": "Analista Senior de Marketing",
+        "fecheInicio": "2025-01-30",
+        "estado": "finalizada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-30",
+                "fechaFinalizacion": "2025-02-10",
+                "fechaCumplimiento": "2025-01-31"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-31",
+                "fechaFinalizacion": "2025-01-30",
+                "fechaCumplimiento": "2025-04-11"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-11",
+                "fechaFinalizacion": "2025-04-10",
+                "fechaCumplimiento": "2025-05-27"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-05-27",
+                "fechaFinalizacion": "2025-05-28",
+                "fechaCumplimiento": "2025-05-27"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-05-27",
+                "fechaFinalizacion": "2025-06-06",
+                "fechaCumplimiento": "2025-06-04"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-06-04",
+                "fechaFinalizacion": "2025-06-05",
+                "fechaCumplimiento": "2025-06-09"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-06-09",
+                "fechaFinalizacion": "2025-06-06",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-06-11",
+                "fechaFinalizacion": "2025-06-12",
+                "fechaCumplimiento": "2025-06-12"
+            }
+        ]
+    },
+    {
+        "vacante": "Asesor Jr. de Ventas",
+        "fecheInicio": "2025-06-02",
+        "estado": "finalizada",
+        "area": "Comercial",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-02",
+                "fechaFinalizacion": "2025-06-11",
+                "fechaCumplimiento": "2025-06-04"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-25",
+                "fechaFinalizacion": "2025-07-04",
+                "fechaCumplimiento": "2025-07-11"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-06-04",
+                "fechaFinalizacion": "2025-06-09",
+                "fechaCumplimiento": "2025-06-05"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-06-05",
+                "fechaFinalizacion": "2025-06-13",
+                "fechaCumplimiento": "2025-06-05"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-06-05",
+                "fechaFinalizacion": "2025-06-06",
+                "fechaCumplimiento": "2025-06-05"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-06-05",
+                "fechaFinalizacion": "2025-06-17",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-06-11",
+                "fechaFinalizacion": "2025-06-12",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-06-11",
+                "fechaFinalizacion": "2025-06-11",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-06-12",
+                "fechaFinalizacion": "2025-06-13",
+                "fechaCumplimiento": "2025-06-12"
+            }
+        ]
+    },
+    {
+        "vacante": "Asesor Junior de Ventas",
+        "fecheInicio": "2025-04-15",
+        "estado": "finalizada",
+        "area": "Comercial",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-04-15",
+                "fechaFinalizacion": "2025-04-24",
+                "fechaCumplimiento": "2025-04-21"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-28",
+                "fechaFinalizacion": "2025-05-01",
+                "fechaCumplimiento": "2025-04-29"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-29",
+                "fechaFinalizacion": "2025-05-07",
+                "fechaCumplimiento": "2025-04-29"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-29",
+                "fechaFinalizacion": "2025-04-30",
+                "fechaCumplimiento": "2025-04-29"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-29",
+                "fechaFinalizacion": "2025-05-09",
+                "fechaCumplimiento": "2025-05-09"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-05-09",
+                "fechaFinalizacion": "2025-05-12",
+                "fechaCumplimiento": "2025-05-13"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-13",
+                "fechaFinalizacion": "2025-05-13",
+                "fechaCumplimiento": "2025-05-13"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-13",
+                "fechaFinalizacion": "2025-05-14",
+                "fechaCumplimiento": "2025-05-13"
+            }
+        ]
+    },
+    {
+        "vacante": "Asesor Senior de ventas",
+        "fecheInicio": "2024-10-10",
+        "estado": "finalizada",
+        "area": "Comercial",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2024-10-10",
+                "fechaFinalizacion": "2024-10-21",
+                "fechaCumplimiento": "2024-10-15"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2024-10-15",
+                "fechaFinalizacion": "2024-10-18",
+                "fechaCumplimiento": "2024-10-20"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2024-10-20",
+                "fechaFinalizacion": "2024-10-28",
+                "fechaCumplimiento": "2024-11-29"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2024-11-29",
+                "fechaFinalizacion": "2024-12-02",
+                "fechaCumplimiento": "2024-12-02"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2024-12-02",
+                "fechaFinalizacion": "2024-12-12",
+                "fechaCumplimiento": "2024-12-10"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2024-12-10",
+                "fechaFinalizacion": "2024-12-11",
+                "fechaCumplimiento": "2024-12-11"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2024-12-11",
+                "fechaFinalizacion": "2024-12-10",
+                "fechaCumplimiento": "2024-12-11"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2024-12-11",
+                "fechaFinalizacion": "2024-12-12",
+                "fechaCumplimiento": "2024-12-12"
+            }
+        ]
+    },
+    {
+        "vacante": "Asesor Senior de ventas\nPJC",
+        "fecheInicio": "2024-10-10",
+        "estado": "finalizada",
+        "area": "Comercial",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2024-10-10",
+                "fechaFinalizacion": "2024-10-23",
+                "fechaCumplimiento": "2024-10-20"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-28",
+                "fechaCumplimiento": "2025-03-04"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-28",
+                "fechaCumplimiento": "2025-03-04"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2024-10-20",
+                "fechaFinalizacion": "2024-10-25",
+                "fechaCumplimiento": "2024-10-23"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-04",
+                "fechaFinalizacion": "2025-03-07",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-04",
+                "fechaFinalizacion": "2025-03-07",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2024-10-28",
+                "fechaFinalizacion": "2024-11-06",
+                "fechaCumplimiento": "2024-11-06"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-21",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-21",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2024-11-06",
+                "fechaFinalizacion": "2024-11-07",
+                "fechaCumplimiento": "2024-11-07"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-14",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-14",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2024-11-07",
+                "fechaFinalizacion": "2024-11-19",
+                "fechaCumplimiento": "2024-11-28"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-25",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-25",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-01-08",
+                "fechaFinalizacion": "2025-01-09",
+                "fechaCumplimiento": "2025-01-08"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-20",
+                "fechaFinalizacion": "2025-03-21",
+                "fechaCumplimiento": "2025-03-20"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-20",
+                "fechaFinalizacion": "2025-03-21",
+                "fechaCumplimiento": "2025-03-20"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-01-08",
+                "fechaFinalizacion": "2025-01-08",
+                "fechaCumplimiento": "2025-01-08"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-03-20",
+                "fechaFinalizacion": "2025-03-20",
+                "fechaCumplimiento": "2025-03-20"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-03-20",
+                "fechaFinalizacion": "2025-03-20",
+                "fechaCumplimiento": "2025-03-20"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-01-09",
+                "fechaFinalizacion": "2025-01-10",
+                "fechaCumplimiento": "2025-01-10"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-03-20",
+                "fechaFinalizacion": "2025-03-21",
+                "fechaCumplimiento": "2025-03-20"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-03-20",
+                "fechaFinalizacion": "2025-03-21",
+                "fechaCumplimiento": "2025-03-20"
+            }
+        ]
+    },
+    {
+        "vacante": "Asistente CRAI",
+        "fecheInicio": "2025-04-23",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-04-23",
+                "fechaFinalizacion": "2025-05-02",
+                "fechaCumplimiento": "2025-05-01"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-05-01",
+                "fechaFinalizacion": "2025-05-06",
+                "fechaCumplimiento": "2025-05-08"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-05-09",
+                "fechaFinalizacion": "2025-05-19",
+                "fechaCumplimiento": "2025-05-12"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-05-12",
+                "fechaFinalizacion": "2025-05-13",
+                "fechaCumplimiento": "2025-05-13"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-05-13",
+                "fechaFinalizacion": "2025-05-12",
+                "fechaCumplimiento": "2025-05-13"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-05-13",
+                "fechaFinalizacion": "2025-05-14",
+                "fechaCumplimiento": "2025-05-13"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-13",
+                "fechaFinalizacion": "2025-05-13",
+                "fechaCumplimiento": "2025-05-19"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-19",
+                "fechaFinalizacion": "2025-05-20",
+                "fechaCumplimiento": "2025-05-19"
+            }
+        ]
+    },
+    {
+        "vacante": "Audiovisualista",
+        "fecheInicio": "2025-01-10",
+        "estado": "cancelada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-10",
+                "fechaFinalizacion": "2025-01-21",
+                "fechaCumplimiento": "2025-02-06"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-06",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-17"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-17",
+                "fechaFinalizacion": "2025-02-25",
+                "fechaCumplimiento": "2025-07-15"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-07-15",
+                "fechaFinalizacion": "2025-07-16",
+                "fechaCumplimiento": "2025-07-16"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-07-16",
+                "fechaFinalizacion": "2025-07-28",
+                "fechaCumplimiento": "2025-07-24"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-07-24",
+                "fechaFinalizacion": "2025-07-25",
+                "fechaCumplimiento": "2025-07-30"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-07-30",
+                "fechaFinalizacion": "2025-07-30",
+                "fechaCumplimiento": "2025-07-31"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-07-31",
+                "fechaFinalizacion": "2025-08-01",
+                "fechaCumplimiento": "2025-07-31"
+            }
+        ]
+    },
+    {
+        "vacante": "Audiovisualista Alessandro Crocco",
+        "fecheInicio": "2025-08-06",
+        "estado": "finalizada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-08-06",
+                "fechaFinalizacion": "2025-08-15",
+                "fechaCumplimiento": "2025-08-13"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-08-13",
+                "fechaFinalizacion": "2025-08-18",
+                "fechaCumplimiento": "2025-08-18"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-08-18",
+                "fechaFinalizacion": "2025-08-26",
+                "fechaCumplimiento": "2025-08-20"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-08-20",
+                "fechaFinalizacion": "2025-08-21",
+                "fechaCumplimiento": "2025-08-21"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-08-21",
+                "fechaFinalizacion": "2025-09-02",
+                "fechaCumplimiento": "2025-08-26"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-26",
+                "fechaFinalizacion": "2025-08-27",
+                "fechaCumplimiento": "2025-08-27"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-27",
+                "fechaFinalizacion": "2025-08-27",
+                "fechaCumplimiento": "2025-08-27"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-27",
+                "fechaFinalizacion": "2025-08-28",
+                "fechaCumplimiento": "2025-08-27"
+            }
+        ]
+    },
+    {
+        "vacante": "Audiovisualista Alex Dominguez",
+        "fecheInicio": "2025-07-03",
+        "estado": "finalizada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-07-03",
+                "fechaFinalizacion": "2025-07-14",
+                "fechaCumplimiento": "2025-07-10"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-07-10",
+                "fechaFinalizacion": "2025-07-15",
+                "fechaCumplimiento": "2025-07-14"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-07-14",
+                "fechaFinalizacion": "2025-07-22",
+                "fechaCumplimiento": "2025-07-15"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-07-15",
+                "fechaFinalizacion": "2025-07-16",
+                "fechaCumplimiento": "2025-07-16"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-07-16",
+                "fechaFinalizacion": "2025-07-28",
+                "fechaCumplimiento": "2025-07-30"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-07-30",
+                "fechaFinalizacion": "2025-07-31",
+                "fechaCumplimiento": "2025-07-30"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-07-30",
+                "fechaFinalizacion": "2025-07-30",
+                "fechaCumplimiento": "2025-07-31"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-07-31",
+                "fechaFinalizacion": "2025-08-01",
+                "fechaCumplimiento": "2025-07-31"
+            }
+        ]
+    },
+    {
+        "vacante": "Cajero de Ctas.Ctes",
+        "fecheInicio": "2025-03-06",
+        "estado": "finalizada",
+        "area": "Finanzas",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-06",
+                "fechaFinalizacion": "2025-03-17",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-06",
+                "fechaFinalizacion": "2025-03-17",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-06",
+                "fechaFinalizacion": "2025-03-17",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-05-05",
+                "fechaFinalizacion": "2025-05-14",
+                "fechaCumplimiento": "2025-05-09"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-14",
+                "fechaFinalizacion": "2025-03-19",
+                "fechaCumplimiento": "2025-03-18"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-14",
+                "fechaFinalizacion": "2025-03-19",
+                "fechaCumplimiento": "2025-03-18"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-14",
+                "fechaFinalizacion": "2025-03-19",
+                "fechaCumplimiento": "2025-03-18"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-05-09",
+                "fechaFinalizacion": "2025-05-14",
+                "fechaCumplimiento": "2025-05-13"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-03-18",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-03-18",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-03-18",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-05-13",
+                "fechaFinalizacion": "2025-05-21",
+                "fechaCumplimiento": "2025-05-19"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-05-19",
+                "fechaFinalizacion": "2025-05-20",
+                "fechaCumplimiento": "2025-05-20"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-04-04",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-04-04",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-04-04",
+                "fechaCumplimiento": "2025-03-25"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-04-04"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-04-04"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-25",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-04-04"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-04",
+                "fechaFinalizacion": "2025-04-04",
+                "fechaCumplimiento": "2025-04-04"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-04",
+                "fechaFinalizacion": "2025-04-03",
+                "fechaCumplimiento": "2025-04-04"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-04",
+                "fechaFinalizacion": "2025-04-03",
+                "fechaCumplimiento": "2025-04-04"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-04",
+                "fechaFinalizacion": "2025-04-07",
+                "fechaCumplimiento": "2025-04-07"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-04",
+                "fechaFinalizacion": "2025-04-07",
+                "fechaCumplimiento": "2025-04-07"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-04",
+                "fechaFinalizacion": "2025-04-07",
+                "fechaCumplimiento": "2025-04-07"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Chofer - Asistente",
+        "fecheInicio": "2024-10-25",
+        "estado": "cancelada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2024-10-25",
+                "fechaFinalizacion": "2024-11-07",
+                "fechaCumplimiento": "2024-11-06"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2024-11-06",
+                "fechaFinalizacion": "2024-11-11",
+                "fechaCumplimiento": "2024-11-12"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2024-11-12",
+                "fechaFinalizacion": "2024-11-22",
+                "fechaCumplimiento": "2024-12-19"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2024-12-19",
+                "fechaFinalizacion": "2024-12-20",
+                "fechaCumplimiento": "2024-12-20"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2024-12-20",
+                "fechaFinalizacion": "2025-01-02",
+                "fechaCumplimiento": "2025-01-14"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-01-14",
+                "fechaFinalizacion": "2025-01-15",
+                "fechaCumplimiento": "2025-01-14"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-01-14",
+                "fechaFinalizacion": "2025-01-14",
+                "fechaCumplimiento": "2025-01-14"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-01-14",
+                "fechaFinalizacion": "2025-01-15",
+                "fechaCumplimiento": "2025-01-15"
+            }
+        ]
+    },
+    {
+        "vacante": "Coordinador de la carrera de Adm. De Empresas",
+        "fecheInicio": "2025-01-13",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-13",
+                "fechaFinalizacion": "2025-01-22",
+                "fechaCumplimiento": "2025-01-31"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-31",
+                "fechaFinalizacion": "2025-02-05",
+                "fechaCumplimiento": "2025-02-03"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-03",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-12"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-12",
+                "fechaFinalizacion": "2025-02-13",
+                "fechaCumplimiento": "2025-02-12"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-12",
+                "fechaFinalizacion": "2025-02-24",
+                "fechaCumplimiento": "2025-02-13"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-13",
+                "fechaFinalizacion": "2025-02-14",
+                "fechaCumplimiento": "2025-02-14"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-02-14",
+                "fechaFinalizacion": "2025-02-14",
+                "fechaCumplimiento": "2025-02-14"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-02-14",
+                "fechaFinalizacion": "2025-02-17",
+                "fechaCumplimiento": "2025-02-16"
+            }
+        ]
+    },
+    {
+        "vacante": "Coordinador de la carrera de contabilidad",
+        "fecheInicio": "2025-01-13",
+        "estado": "cancelada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-13",
+                "fechaFinalizacion": "2025-01-22",
+                "fechaCumplimiento": "2025-01-24"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-24",
+                "fechaFinalizacion": "2025-01-29",
+                "fechaCumplimiento": "2025-01-27"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-01-27",
+                "fechaFinalizacion": "2025-01-24",
+                "fechaCumplimiento": "2025-07-29"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-07-29",
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Coordinador/a de Extensión e Investigación  FCE",
+        "fecheInicio": "2025-07-22",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-07-22",
+                "fechaFinalizacion": "2025-07-31",
+                "fechaCumplimiento": "2025-07-23"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-07-23",
+                "fechaFinalizacion": "2025-07-28",
+                "fechaCumplimiento": "2025-07-23"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-07-23",
+                "fechaFinalizacion": "2025-07-31",
+                "fechaCumplimiento": "2025-07-24"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-07-24",
+                "fechaFinalizacion": "2025-07-25",
+                "fechaCumplimiento": "2025-07-25"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-07-25",
+                "fechaFinalizacion": "2025-08-06",
+                "fechaCumplimiento": "2025-08-20"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-20",
+                "fechaFinalizacion": "2025-08-21",
+                "fechaCumplimiento": "2025-08-21"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-21",
+                "fechaFinalizacion": "2025-08-21",
+                "fechaCumplimiento": "2025-08-25"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-25",
+                "fechaFinalizacion": "2025-08-26",
+                "fechaCumplimiento": "2025-08-29"
+            }
+        ]
+    },
+    {
+        "vacante": "Coordinadora de Aseguramiento de la Calidad",
+        "fecheInicio": "2025-02-14",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "PJC",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-14",
+                "fechaFinalizacion": "2025-02-25",
+                "fechaCumplimiento": "2025-02-26"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-26",
+                "fechaFinalizacion": "2025-02-25",
+                "fechaCumplimiento": "2025-02-28"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-05-08",
+                "fechaFinalizacion": "2025-05-16",
+                "fechaCumplimiento": "2025-05-08"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-05-08",
+                "fechaFinalizacion": "2025-05-09",
+                "fechaCumplimiento": "2025-05-12"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-05-12",
+                "fechaFinalizacion": "2025-05-22",
+                "fechaCumplimiento": "2025-05-27"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-05-27",
+                "fechaFinalizacion": "2025-05-28",
+                "fechaCumplimiento": "2025-05-27"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-27",
+                "fechaFinalizacion": "2025-05-26",
+                "fechaCumplimiento": "2025-05-27"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-28",
+                "fechaFinalizacion": "2025-05-29",
+                "fechaCumplimiento": "2025-05-29"
+            }
+        ]
+    },
+    {
+        "vacante": "Creador de campañas digitales y Administrador de cuentas",
+        "fecheInicio": "2025-01-29",
+        "estado": "cancelada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-29",
+                "fechaFinalizacion": "2025-02-07",
+                "fechaCumplimiento": "2025-02-09"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-09",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Creador de contenido Daniella Bogado",
+        "fecheInicio": "2025-08-01",
+        "estado": "finalizada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-08-01",
+                "fechaFinalizacion": "2025-08-12",
+                "fechaCumplimiento": "2025-08-07"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-08-07",
+                "fechaFinalizacion": "2025-08-12",
+                "fechaCumplimiento": "2025-08-07"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-08-07",
+                "fechaFinalizacion": "2025-08-15",
+                "fechaCumplimiento": "2025-08-13"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-08-13",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-14"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-08-14",
+                "fechaFinalizacion": "2025-08-26",
+                "fechaCumplimiento": "2025-08-26"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-26",
+                "fechaFinalizacion": "2025-08-27",
+                "fechaCumplimiento": "2025-08-28"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-28",
+                "fechaFinalizacion": "2025-08-28",
+                "fechaCumplimiento": "2025-08-28"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-28",
+                "fechaFinalizacion": "2025-08-29",
+                "fechaCumplimiento": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "vacante": "Desarrollador Pleno",
+        "fecheInicio": "2025-01-28",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-28",
+                "fechaFinalizacion": "2025-02-06",
+                "fechaCumplimiento": "2025-02-07"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-07",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-12"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-12",
+                "fechaFinalizacion": "2025-02-20",
+                "fechaCumplimiento": "2025-04-11"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-11",
+                "fechaFinalizacion": "2025-04-14",
+                "fechaCumplimiento": "2025-04-14"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-14",
+                "fechaFinalizacion": "2025-04-24",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-23",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-05-05"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-05",
+                "fechaFinalizacion": "2025-05-06",
+                "fechaCumplimiento": "2025-05-06"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-06",
+                "fechaFinalizacion": "2025-05-07",
+                "fechaCumplimiento": "2025-05-06"
+            }
+        ]
+    },
+    {
+        "vacante": "Estratega de medios",
+        "fecheInicio": "2025-01-03",
+        "estado": "cancelada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-03",
+                "fechaFinalizacion": "2025-01-14",
+                "fechaCumplimiento": "2025-01-29"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-29",
+                "fechaFinalizacion": "2025-02-03",
+                "fechaCumplimiento": "2025-02-20"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-20",
+                "fechaFinalizacion": "2025-02-28",
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Jefe Administrativo BD",
+        "fecheInicio": "2025-01-10",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-10",
+                "fechaFinalizacion": "2025-01-21",
+                "fechaCumplimiento": "2025-01-14"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-14",
+                "fechaFinalizacion": "2025-01-17",
+                "fechaCumplimiento": "2025-01-28"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-01-28",
+                "fechaFinalizacion": "2025-02-05",
+                "fechaCumplimiento": "2025-01-30"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-01-30",
+                "fechaFinalizacion": "2025-01-31",
+                "fechaCumplimiento": "2025-01-31"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-01-31",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-11"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-11",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-11"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-02-11",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-11"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-02-11",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-12"
+            }
+        ]
+    },
+    {
+        "vacante": "Jefe Creativo",
+        "fecheInicio": "2025-01-03",
+        "estado": "cancelada",
+        "area": "Marketing",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-03",
+                "fechaFinalizacion": "2025-01-14",
+                "fechaCumplimiento": "2025-01-24"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-24",
+                "fechaFinalizacion": "2025-01-29",
+                "fechaCumplimiento": "2025-02-02"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-02",
+                "fechaFinalizacion": "2025-02-10",
+                "fechaCumplimiento": "2025-02-07"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-07",
+                "fechaFinalizacion": "2025-02-10",
+                "fechaCumplimiento": "2025-02-10"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-10",
+                "fechaFinalizacion": "2025-02-20",
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Jefe de Proyectos y Mejora continua",
+        "fecheInicio": "2025-01-03",
+        "estado": "cancelada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-03",
+                "fechaFinalizacion": "2025-01-14",
+                "fechaCumplimiento": "2025-01-24"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-24",
+                "fechaFinalizacion": "2025-01-29",
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Jefe de RR.HH",
+        "fecheInicio": "2025-03-04",
+        "estado": "finalizada",
+        "area": "Recursos Humanos",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-04",
+                "fechaFinalizacion": "2025-03-13",
+                "fechaCumplimiento": "2025-03-11"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-03-11",
+                "fechaFinalizacion": "2025-03-14",
+                "fechaCumplimiento": "2025-03-11"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-03-11",
+                "fechaFinalizacion": "2025-03-19",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-14",
+                "fechaFinalizacion": "2025-03-17",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-03-14",
+                "fechaFinalizacion": "2025-03-26",
+                "fechaCumplimiento": "2025-03-21"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-21",
+                "fechaFinalizacion": "2025-03-24",
+                "fechaCumplimiento": "2025-05-12"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-12",
+                "fechaFinalizacion": "2025-05-12",
+                "fechaCumplimiento": "2025-05-12"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-12",
+                "fechaFinalizacion": "2025-05-13",
+                "fechaCumplimiento": "2025-05-12"
+            }
+        ]
+    },
+    {
+        "vacante": "Líder de Proyectos y Obras reemplazo de Leonora González",
+        "fecheInicio": "2025-06-23",
+        "estado": "finalizada",
+        "area": "Infraestructura y Obras",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-23",
+                "fechaFinalizacion": "2025-07-02",
+                "fechaCumplimiento": "2025-07-04"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-07-04",
+                "fechaFinalizacion": "2025-07-09",
+                "fechaCumplimiento": "2025-07-22"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-07-22",
+                "fechaFinalizacion": "2025-07-30",
+                "fechaCumplimiento": "2025-07-25"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-07-25",
+                "fechaFinalizacion": "2025-07-28",
+                "fechaCumplimiento": "2025-07-28"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-07-28",
+                "fechaFinalizacion": "2025-08-07",
+                "fechaCumplimiento": "2025-08-20"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-20",
+                "fechaFinalizacion": "2025-08-21",
+                "fechaCumplimiento": "2025-08-22"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-22",
+                "fechaFinalizacion": "2025-08-22",
+                "fechaCumplimiento": "2025-08-22"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-22",
+                "fechaFinalizacion": "2025-08-25",
+                "fechaCumplimiento": "2025-08-25"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza 1",
+        "fecheInicio": "2025-02-12",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-12",
+                "fechaFinalizacion": "2025-02-21",
+                "fechaCumplimiento": "2025-02-19"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-24",
+                "fechaCumplimiento": "2025-02-20"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-20",
+                "fechaFinalizacion": "2025-02-28",
+                "fechaCumplimiento": "2025-02-21"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-21",
+                "fechaFinalizacion": "2025-02-24",
+                "fechaCumplimiento": "2025-02-24"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-24",
+                "fechaFinalizacion": "2025-03-06",
+                "fechaCumplimiento": "2025-02-25"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-25",
+                "fechaFinalizacion": "2025-02-26",
+                "fechaCumplimiento": "2025-02-26"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-02-26",
+                "fechaFinalizacion": "2025-02-25",
+                "fechaCumplimiento": "2025-02-26"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-02-26",
+                "fechaFinalizacion": "2025-02-27",
+                "fechaCumplimiento": "2025-02-26"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza 1 reemplazo de Yessica Romero",
+        "fecheInicio": "2025-06-09",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-09",
+                "fechaFinalizacion": "2025-06-18",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-06-11",
+                "fechaFinalizacion": "2025-06-16",
+                "fechaCumplimiento": "2025-06-13"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-06-13",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-19",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-30",
+                "fechaCumplimiento": "2025-06-20"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-06-20",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-23"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-06-23",
+                "fechaFinalizacion": "2025-06-21",
+                "fechaCumplimiento": "2025-06-24"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-06-24",
+                "fechaFinalizacion": "2025-06-25",
+                "fechaCumplimiento": "2025-06-25"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza 2 Naylen Britez",
+        "fecheInicio": "2025-01-28",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-01-28",
+                "fechaFinalizacion": "2025-02-06",
+                "fechaCumplimiento": "2025-01-31"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-01-31",
+                "fechaFinalizacion": "2025-02-05",
+                "fechaCumplimiento": "2025-01-31"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-01-31",
+                "fechaFinalizacion": "2025-01-30",
+                "fechaCumplimiento": "2025-02-04"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-04",
+                "fechaFinalizacion": "2025-02-05",
+                "fechaCumplimiento": "2025-02-04"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-04",
+                "fechaFinalizacion": "2025-02-14",
+                "fechaCumplimiento": "2025-02-11"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-11",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-14"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-02-14",
+                "fechaFinalizacion": "2025-02-14",
+                "fechaCumplimiento": "2025-02-14"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-02-14",
+                "fechaFinalizacion": "2025-02-17",
+                "fechaCumplimiento": "2025-02-14"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza 2 temporal reemplazo de Alan Gill",
+        "fecheInicio": "2025-06-09",
+        "estado": "cancelada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-09",
+                "fechaFinalizacion": "2025-06-18",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-06-11",
+                "fechaFinalizacion": "2025-06-16",
+                "fechaCumplimiento": "2025-06-12"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-06-12",
+                "fechaFinalizacion": "2025-06-20",
+                "fechaCumplimiento": "2025-06-17"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-06-17",
+                "fechaFinalizacion": "2025-06-18",
+                "fechaCumplimiento": "2025-06-19"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-06-19",
+                "fechaFinalizacion": "2025-07-01",
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": null,
+                "fechaFinalizacion": null,
+                "fechaCumplimiento": null
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza 3 Remplazo de Hugo Vargas",
+        "fecheInicio": "2025-02-17",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-17",
+                "fechaFinalizacion": "2025-02-26",
+                "fechaCumplimiento": "2025-02-24"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-24",
+                "fechaFinalizacion": "2025-02-27",
+                "fechaCumplimiento": "2025-02-24"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-24",
+                "fechaFinalizacion": "2025-03-04",
+                "fechaCumplimiento": "2025-02-27"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-27",
+                "fechaFinalizacion": "2025-02-28",
+                "fechaCumplimiento": "2025-02-28"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-28",
+                "fechaFinalizacion": "2025-03-12",
+                "fechaCumplimiento": "2025-03-12"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-12",
+                "fechaFinalizacion": "2025-03-13",
+                "fechaCumplimiento": "2025-03-12"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-03-12",
+                "fechaFinalizacion": "2025-03-12",
+                "fechaCumplimiento": "2025-03-12"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-03-12",
+                "fechaFinalizacion": "2025-03-13",
+                "fechaCumplimiento": "2025-03-14"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza 3 reemplazo de Usvalda",
+        "fecheInicio": "2025-06-09",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-09",
+                "fechaFinalizacion": "2025-06-18",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-06-11",
+                "fechaFinalizacion": "2025-06-16",
+                "fechaCumplimiento": "2025-06-13"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-06-13",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-19",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-30",
+                "fechaCumplimiento": "2025-06-20"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-06-20",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-23"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-06-23",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-24"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-06-24",
+                "fechaFinalizacion": "2025-06-25",
+                "fechaCumplimiento": "2025-06-25"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza 4 reemplazo de Liliana",
+        "fecheInicio": "2025-06-09",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-09",
+                "fechaFinalizacion": "2025-06-18",
+                "fechaCumplimiento": "2025-06-11"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-06-11",
+                "fechaFinalizacion": "2025-06-16",
+                "fechaCumplimiento": "2025-06-13"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-06-13",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-19",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-30",
+                "fechaCumplimiento": "2025-06-20"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-06-20",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-23"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-06-23",
+                "fechaFinalizacion": "2025-06-23",
+                "fechaCumplimiento": "2025-06-24"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-06-24",
+                "fechaFinalizacion": "2025-06-25",
+                "fechaCumplimiento": "2025-06-25"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza reemplazo de Luis Aranda",
+        "fecheInicio": "2025-08-05",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-08-05",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-05"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-08-05",
+                "fechaFinalizacion": "2025-08-08",
+                "fechaCumplimiento": "2025-08-06"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-08-06",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-11"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-08-11",
+                "fechaFinalizacion": "2025-08-12",
+                "fechaCumplimiento": "2025-08-12"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-08-12",
+                "fechaFinalizacion": "2025-08-22",
+                "fechaCumplimiento": "2025-08-14"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-14",
+                "fechaFinalizacion": "2025-08-15",
+                "fechaCumplimiento": "2025-08-19"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-19",
+                "fechaFinalizacion": "2025-08-19",
+                "fechaCumplimiento": "2025-08-20"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-20",
+                "fechaFinalizacion": "2025-08-21",
+                "fechaCumplimiento": "2025-08-20"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza reemplazo de Norma López",
+        "fecheInicio": "2025-08-05",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-08-05",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-05"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-08-05",
+                "fechaFinalizacion": "2025-08-08",
+                "fechaCumplimiento": "2025-08-06"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-08-06",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-13"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-08-13",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-14"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-08-14",
+                "fechaFinalizacion": "2025-08-26",
+                "fechaCumplimiento": "2025-08-14"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-14",
+                "fechaFinalizacion": "2025-08-15",
+                "fechaCumplimiento": "2025-08-19"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-19",
+                "fechaFinalizacion": "2025-08-19",
+                "fechaCumplimiento": "2025-08-20"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-20",
+                "fechaFinalizacion": "2025-08-21",
+                "fechaCumplimiento": "2025-08-21"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Limpieza reemplazo de Vanessa Sánchez",
+        "fecheInicio": "2025-08-05",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-08-05",
+                "fechaFinalizacion": "2025-08-14",
+                "fechaCumplimiento": "2025-08-14"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-08-14",
+                "fechaFinalizacion": "2025-08-19",
+                "fechaCumplimiento": "2025-08-19"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-08-19",
+                "fechaFinalizacion": "2025-08-27",
+                "fechaCumplimiento": "2025-08-22"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-08-22",
+                "fechaFinalizacion": "2025-08-25",
+                "fechaCumplimiento": "2025-08-25"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-08-25",
+                "fechaFinalizacion": "2025-09-04",
+                "fechaCumplimiento": "2025-08-29"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-08-29",
+                "fechaFinalizacion": "2025-09-01",
+                "fechaCumplimiento": "2025-09-02"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-09-02",
+                "fechaFinalizacion": "2025-09-02",
+                "fechaCumplimiento": "2025-09-03"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-09-03",
+                "fechaFinalizacion": "2025-09-04",
+                "fechaCumplimiento": "2025-09-03"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de Mantenimiento II en reemplazo de Juan Aguiar",
+        "fecheInicio": "2025-08-07",
+        "estado": "finalizada",
+        "area": "Mantenimiento",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-08-07",
+                "fechaFinalizacion": "2025-08-18",
+                "fechaCumplimiento": "2025-08-14"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-08-14",
+                "fechaFinalizacion": "2025-08-19",
+                "fechaCumplimiento": "2025-08-22"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-08-22",
+                "fechaFinalizacion": "2025-09-01",
+                "fechaCumplimiento": "2025-08-28"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-08-28",
+                "fechaFinalizacion": "2025-08-29",
+                "fechaCumplimiento": "2025-08-29"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-08-29",
+                "fechaFinalizacion": "2025-09-10",
+                "fechaCumplimiento": "2025-09-08"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-09-08",
+                "fechaFinalizacion": "2025-09-09",
+                "fechaCumplimiento": "2025-09-10"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-09-10",
+                "fechaFinalizacion": "2025-09-10",
+                "fechaCumplimiento": "2025-09-11"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-09-11",
+                "fechaFinalizacion": "2025-09-12",
+                "fechaCumplimiento": "2025-09-11"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de limpieza",
+        "fecheInicio": "2025-03-31",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-31",
+                "fechaFinalizacion": "2025-04-09",
+                "fechaCumplimiento": "2025-04-08"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-05-05",
+                "fechaFinalizacion": "2025-05-14",
+                "fechaCumplimiento": "2025-05-07"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-05",
+                "fechaFinalizacion": "2025-02-14",
+                "fechaCumplimiento": "2025-02-21"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-08",
+                "fechaFinalizacion": "2025-04-11",
+                "fechaCumplimiento": "2025-04-08"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-05-07",
+                "fechaFinalizacion": "2025-05-12",
+                "fechaCumplimiento": "2025-05-07"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-21",
+                "fechaFinalizacion": "2025-02-26",
+                "fechaCumplimiento": "2025-02-28"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-08",
+                "fechaFinalizacion": "2025-04-16",
+                "fechaCumplimiento": "2025-04-09"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-05-07",
+                "fechaFinalizacion": "2025-05-15",
+                "fechaCumplimiento": "2025-05-08"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-28",
+                "fechaFinalizacion": "2025-03-10",
+                "fechaCumplimiento": "2025-03-06"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-09",
+                "fechaFinalizacion": "2025-04-10",
+                "fechaCumplimiento": "2025-04-10"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-05-08",
+                "fechaFinalizacion": "2025-05-09",
+                "fechaCumplimiento": "2025-05-08"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-03-06",
+                "fechaFinalizacion": "2025-03-07",
+                "fechaCumplimiento": "2025-03-06"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-11",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-05-08",
+                "fechaFinalizacion": "2025-05-20",
+                "fechaCumplimiento": "2025-05-08"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-03-06",
+                "fechaFinalizacion": "2025-03-18",
+                "fechaCumplimiento": "2025-03-12"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-24"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-05-08",
+                "fechaFinalizacion": "2025-05-09",
+                "fechaCumplimiento": "2025-05-21"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-03-12",
+                "fechaFinalizacion": "2025-03-13",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-24",
+                "fechaFinalizacion": "2025-04-24",
+                "fechaCumplimiento": "2025-04-28"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-05-21",
+                "fechaFinalizacion": "2025-05-21",
+                "fechaCumplimiento": "2025-05-21"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-03-14",
+                "fechaFinalizacion": "2025-03-14",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-28",
+                "fechaFinalizacion": "2025-04-29",
+                "fechaCumplimiento": "2025-04-28"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-05-21",
+                "fechaFinalizacion": "2025-05-22",
+                "fechaCumplimiento": "2025-05-22"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-03-14",
+                "fechaFinalizacion": "2025-03-17",
+                "fechaCumplimiento": "2025-03-14"
+            }
+        ]
+    },
+    {
+        "vacante": "Operario de limpieza",
+        "fecheInicio": "2025-03-31",
+        "estado": "finalizada",
+        "area": "Limpieza",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-03-31",
+                "fechaFinalizacion": "2025-04-09",
+                "fechaCumplimiento": "2025-04-08"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-04-08",
+                "fechaFinalizacion": "2025-04-11",
+                "fechaCumplimiento": "2025-04-08"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-04-08",
+                "fechaFinalizacion": "2025-04-16",
+                "fechaCumplimiento": "2025-04-09"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-04-09",
+                "fechaFinalizacion": "2025-04-10",
+                "fechaCumplimiento": "2025-04-10"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-04-10",
+                "fechaFinalizacion": "2025-04-22",
+                "fechaCumplimiento": "2025-04-22"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-04-22",
+                "fechaFinalizacion": "2025-04-23",
+                "fechaCumplimiento": "2025-04-24"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-04-24",
+                "fechaFinalizacion": "2025-04-24",
+                "fechaCumplimiento": "2025-04-28"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-04-28",
+                "fechaFinalizacion": "2025-04-29",
+                "fechaCumplimiento": "2025-04-28"
+            }
+        ]
+    },
+    {
+        "vacante": "Recepcionista",
+        "fecheInicio": "2025-02-17",
+        "estado": "finalizada",
+        "area": "Académico",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-17",
+                "fechaFinalizacion": "2025-02-26",
+                "fechaCumplimiento": "2025-02-19"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-05-05",
+                "fechaFinalizacion": "2025-05-14",
+                "fechaCumplimiento": "2025-05-09"
+            },
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-06-01",
+                "fechaFinalizacion": "2025-06-10",
+                "fechaCumplimiento": "2025-07-03"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-24",
+                "fechaCumplimiento": "2025-02-19"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-05-09",
+                "fechaFinalizacion": "2025-05-14",
+                "fechaCumplimiento": "2025-06-02"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-07-03",
+                "fechaFinalizacion": "2025-07-08",
+                "fechaCumplimiento": "2025-07-08"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-19",
+                "fechaFinalizacion": "2025-02-27",
+                "fechaCumplimiento": "2025-02-20"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-06-02",
+                "fechaFinalizacion": "2025-06-10",
+                "fechaCumplimiento": "2025-06-04"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-07-08",
+                "fechaFinalizacion": "2025-07-16",
+                "fechaCumplimiento": "2025-07-14"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-20",
+                "fechaFinalizacion": "2025-02-21",
+                "fechaCumplimiento": "2025-02-20"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-06-04",
+                "fechaFinalizacion": "2025-06-05",
+                "fechaCumplimiento": "2025-06-04"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-07-14",
+                "fechaFinalizacion": "2025-07-15",
+                "fechaCumplimiento": "2025-07-15"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-20",
+                "fechaFinalizacion": "2025-03-04",
+                "fechaCumplimiento": "2025-02-25"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-06-04",
+                "fechaFinalizacion": "2025-06-16",
+                "fechaCumplimiento": "2025-06-13"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-07-15",
+                "fechaFinalizacion": "2025-07-25",
+                "fechaCumplimiento": "2025-07-30"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-25",
+                "fechaFinalizacion": "2025-02-26",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-06-13",
+                "fechaFinalizacion": "2025-06-16",
+                "fechaCumplimiento": "2025-06-17"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-07-30",
+                "fechaFinalizacion": "2025-07-31",
+                "fechaCumplimiento": "2025-08-05"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-13",
+                "fechaCumplimiento": "2025-03-13"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-06-17",
+                "fechaFinalizacion": "2025-06-17",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-08-05",
+                "fechaFinalizacion": "2025-08-05",
+                "fechaCumplimiento": "2025-08-05"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-03-13",
+                "fechaFinalizacion": "2025-03-14",
+                "fechaCumplimiento": "2025-03-14"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-06-18",
+                "fechaFinalizacion": "2025-06-17",
+                "fechaCumplimiento": "2025-06-18"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-08-05",
+                "fechaFinalizacion": "2025-08-06",
+                "fechaCumplimiento": "2025-08-06"
+            }
+        ]
+    },
+    {
+        "vacante": "Técnico Jr. de Infraestructura y servicios",
+        "fecheInicio": "2025-02-02",
+        "estado": "finalizada",
+        "area": "IT",
+        "sede": "San Martín",
+        "etapas": [
+            {
+                "nombre": "Difusión de la búsqueda",
+                "fechaInicio": "2025-02-02",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-04"
+            },
+            {
+                "nombre": "Evaluación de perfiles",
+                "fechaInicio": "2025-02-04",
+                "fechaFinalizacion": "2025-02-07",
+                "fechaCumplimiento": "2025-02-04"
+            },
+            {
+                "nombre": "Entrevista por competencias",
+                "fechaInicio": "2025-02-04",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-04"
+            },
+            {
+                "nombre": "Referencias laborales",
+                "fechaInicio": "2025-02-04",
+                "fechaFinalizacion": "2025-02-05",
+                "fechaCumplimiento": "2025-02-05"
+            },
+            {
+                "nombre": "Evaluación psicotécnica y comportamental",
+                "fechaInicio": "2025-02-05",
+                "fechaFinalizacion": "2025-02-17",
+                "fechaCumplimiento": "2025-02-10"
+            },
+            {
+                "nombre": "Remisión de informe (Reclutador)",
+                "fechaInicio": "2025-02-10",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-11"
+            },
+            {
+                "nombre": "Respuesta sobre informe (Solicitante)",
+                "fechaInicio": "2025-02-11",
+                "fechaFinalizacion": "2025-02-11",
+                "fechaCumplimiento": "2025-02-11"
+            },
+            {
+                "nombre": "Carta oferta",
+                "fechaInicio": "2025-02-11",
+                "fechaFinalizacion": "2025-02-12",
+                "fechaCumplimiento": "2025-02-12"
+            }
+        ]
+    }
+]
