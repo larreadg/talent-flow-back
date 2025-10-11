@@ -96,10 +96,36 @@ async function getResumenVacantesMensualUltimos12Meses(req, res) {
   }
 }
 
+/**
+ * Promedio de finalizacion
+ *
+ * @param {Request} req - Express request
+ * @param {ExpressResponse} res - Express response.
+ * @returns {Promise<void>}
+ */
+async function getPromedioDiasFinalizacion(req, res) {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send(new Response('error', 400, null, errors.array()))
+    }
+    const result = await ReporteService.getPromedioDiasFinalizacion()
+    return res
+      .status(200)
+      .send(new Response('success', 200, result, 'Promedio de finalización'))
+  } catch (e) {
+    if (e instanceof TalentFlowError) {
+      return res.status(e.code).send(new Response('error', e.code, null, e.message))
+    }
+    return res.status(500).send(new Response('error', 500, null, e.message || 'Server error'))
+  }
+}
+
 export const ReporteController = {
   descargarReporteVacantes,
   getSLAResumenMaximo,
   getTopDepartamentosIncumplimientoEtapas,
-  getResumenVacantesMensualUltimos12Meses
+  getResumenVacantesMensualUltimos12Meses,
+  getPromedioDiasFinalizacion
 }
   

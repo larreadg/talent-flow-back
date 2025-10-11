@@ -1,5 +1,6 @@
-import dayjs from "dayjs"
+import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
+import { TalentFlowError } from './error.js'
 dayjs.extend(utc)
 /**
  * Helpers
@@ -47,9 +48,9 @@ export function addBusinessDaysInclusive(start, n, holidaySet) {
 /**
  * Normaliza una fecha (string | Date) a Date-only (UTC 00:00) para @db.Date
  */
-export function toDateOnly(value) {
+export function toDateOnly(value, field = 'fechaInicio') {
     const d = dayjs.utc(value)
-    if (!d.isValid()) throw new TalentFlowError('fechaInicio inválida. Usar formato YYYY-MM-DD.', 400)
+    if (!d.isValid()) throw new TalentFlowError(`${field} inválida. Usar formato YYYY-MM-DD.`, 400)
     // conservar solo la parte de fecha
     return new Date(d.format('YYYY-MM-DD') + 'T00:00:00.000Z')
 }

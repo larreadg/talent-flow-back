@@ -306,6 +306,9 @@ model Vacante {
   aumentoDotacion Boolean @default(false)
   resultado      VacanteResultado?
   recursos       String?
+  fechaConfirmacion DateTime? @db.Date
+  fechaIngreso      DateTime? @db.Date
+  diasHabilesFinalizacion  Int?
 
   uc String?
   fc DateTime @default(now()) @db.Timestamptz(6)

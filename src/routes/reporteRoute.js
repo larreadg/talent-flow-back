@@ -38,4 +38,10 @@ router.get(
     ReporteController.getTopDepartamentosIncumplimientoEtapas 
 )
 
+router.get(
+    '/promedio-finalizacion',
+    verifyRol(TF_ALL_ROLS),
+    ReporteController.getPromedioDiasFinalizacion 
+)
+
 export default router

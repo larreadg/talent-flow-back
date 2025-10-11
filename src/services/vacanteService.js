@@ -11,7 +11,7 @@ dayjs.extend(utc)
 dayjs.extend(localizedFormat)
 dayjs.locale('es')
 
-const PATCH_ALLOWED = ['nombre', 'departamentoId', 'sedeId', 'fechaInicio', 'estado', 'aumentoDotacion', 'resultado']
+const PATCH_ALLOWED = ['nombre', 'departamentoId', 'sedeId', 'fechaInicio', 'estado', 'aumentoDotacion', 'resultado', 'fechaIngreso', 'fechaConfirmacion']
 
 /**
  * GET: Lista vacantes por empresa del usuario actual con paginación y filtro.
@@ -183,7 +183,7 @@ async function getById(id) {
 
         /** Cargar vacante + relaciones necesarias */
         let vacante = await prisma.vacante.findFirst({
-            where: { id, empresaId: currentUser.empresaId, estado: { in: ['abierta', 'finalizada', 'pausada'] } },
+            where: { id, empresaId: currentUser.empresaId, estado: { in: ['abierta', 'finalizada', 'pausada', 'cancelada'] } },
             include: {
                 proceso: { select: { nombre: true } },
                 departamento: { select: { nombre: true } },
@@ -319,6 +319,8 @@ async function getById(id) {
          * Normalización + métricas por etapa
          * ----------------------------------- */
         vacante.fechaInicio = vacante.fechaInicio ? toYMD(vacante.fechaInicio) : null;
+        vacante.fechaConfirmacion = vacante.fechaConfirmacion ? toYMD(vacante.fechaConfirmacion) : null;
+        vacante.fechaIngreso = vacante.fechaIngreso ? toYMD(vacante.fechaIngreso) : null;
 
         // Sets globales para días únicos
         const coveredBusinessDays = new Set();
@@ -637,8 +639,23 @@ async function patch(id, input) {
             throw new TalentFlowError('Vacante no encontrada o no pertenece a la empresa del usuario.', 404)
         }
 
-        if(current.estado === 'finalizada') {
-            data = pick(input, ['nombre', 'departamentoId', 'sedeId', 'fechaInicio', 'aumentoDotacion', 'resultado'])
+        const nextEstado = data.estado
+        if (nextEstado) {
+            if (current.estado === 'abierta' && !['abierta','pausada','cancelada'].includes(nextEstado)) {
+                throw new TalentFlowError('Una vacante abierta solo se puede pausar o cancelar', 400);
+            }
+
+            if (current.estado === 'finalizada' && !['finalizada','cancelada'].includes(nextEstado)) {
+                throw new TalentFlowError('Una vacante finalizada solo se puede cancelar', 400);
+            }
+
+            if (current.estado === 'pausada' && !['pausada','abierta'].includes(nextEstado)) {
+                throw new TalentFlowError('Una vacante pausada solo se puede abrir', 400);
+            }
+
+            if (current.estado === 'cancelada' && next !== 'cancelada') {
+                throw new TalentFlowError('Una vacante cancelada no puede cambiar de estado', 400);
+            }
         }
 
         // Normalizaciones y validaciones específicas
@@ -675,6 +692,22 @@ async function patch(id, input) {
             newFechaInicio = toDateOnly(data.fechaInicio)
             fechaInicioChanged = !current.fechaInicio || dayjs.utc(current.fechaInicio).format('YYYY-MM-DD') !== dayjs.utc(newFechaInicio).format('YYYY-MM-DD')
             data.fechaInicio = newFechaInicio
+        }
+
+        if ('fechaIngreso' in data && data.fechaIngreso !== null) {
+            let newFechaIngreso = toDateOnly(data.fechaIngreso, 'fechaIngreso')
+            if (dayjs.utc(newFechaIngreso).isBefore(dayjs.utc(current.fechaInicio))) {
+                throw new TalentFlowError('fechaIngreso debe ser posterior o igual a la fecha de inicio.', 400)
+            }
+            data.fechaIngreso = newFechaIngreso
+        }
+        
+        if ('fechaConfirmacion' in data && data.fechaConfirmacion !== null) {
+            let newFechaConfirmacion = toDateOnly(data.fechaConfirmacion, 'fechaConfirmacion')
+            if (dayjs.utc(newFechaConfirmacion).isBefore(dayjs.utc(current.fechaInicio))) {
+                throw new TalentFlowError('fechaConfirmacion debe ser posterior o igual a la fecha de inicio.', 400)
+            }
+            data.fechaConfirmacion = newFechaConfirmacion
         }
 
         // Unicidad (estado por defecto = 'abierta')
@@ -716,6 +749,8 @@ async function patch(id, input) {
                     ...(data.estado !== undefined ? { estado: data.estado } : {}),
                     ...(data.aumentoDotacion !== undefined ? { aumentoDotacion: data.aumentoDotacion } : {}),
                     ...(data.resultado !== undefined ? { resultado: data.resultado } : {}),
+                    ...(data.fechaIngreso !== undefined ? { fechaIngreso: data.fechaIngreso } : {}),
+                    ...(data.fechaConfirmacion !== undefined ? { fechaConfirmacion: data.fechaConfirmacion } : {}),
                     um: currentUser.id,
                     // fechaInicio no cambió o no se envió
                 },
@@ -798,6 +833,8 @@ async function patch(id, input) {
                     ...(data.departamentoId !== undefined ? { departamentoId: data.departamentoId ?? null } : {}),
                     ...(data.sedeId !== undefined ? { sedeId: data.sedeId ?? null } : {}),
                     ...(data.estado !== undefined ? { estado: data.estado } : {}),
+                    ...(data.fechaIngreso !== undefined ? { fechaIngreso: data.fechaIngreso } : {}),
+                    ...(data.fechaConfirmacion !== undefined ? { fechaConfirmacion: data.fechaConfirmacion } : {}),
                     fechaInicio: newFechaInicio,
                     um: currentUser.id,
                 },
@@ -1016,7 +1053,8 @@ async function completarEtapa(input) {
                         id: true,
                         empresaId: true,
                         procesoId: true,
-                        estado: true
+                        estado: true,
+                        diasHabilesFinalizacion: true
                     }
                 },
                 procesoEtapa: {
@@ -1109,6 +1147,7 @@ async function completarEtapa(input) {
                 await tx.vacante.update({
                     where: { id: etapa.vacanteId },
                     data: { estado: 'abierta', um: currentUser.id },
+                    diasHabilesFinalizacion: null
                 })
 
                 let cursor = dayjs.utc(doneDate) // la siguiente empieza el mismo día de la finalización real de n
@@ -1137,6 +1176,7 @@ async function completarEtapa(input) {
                     data: {
                         estado: 'finalizada', // 'finalizada' o 'cerrada' según tu enum
                         um: currentUser.id,
+                        diasHabilesFinalizacion: null
                     },
                 })
 

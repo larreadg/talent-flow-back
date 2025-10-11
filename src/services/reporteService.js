@@ -465,7 +465,7 @@ async function getSLAResumenMaximo({ estados = null, departamentos = null, sedes
         const departamentosList = normalizeList(departamentos)
         const sedesList = normalizeList(sedes)
 
-        const baseWhere = { empresaId: currentUser.empresaId, activo: true, estado: { in: ['abierta', 'finalizada'] } }
+        const baseWhere = { empresaId: currentUser.empresaId, activo: true, estado: { in: ['finalizada'] } }
         const and = [baseWhere]
         if (estadosList.length) and.push({ estado: { in: estadosList } })
         if (departamentosList.length) and.push({ departamentoId: { in: departamentosList } })
@@ -618,7 +618,7 @@ async function getSLAResumenMaximo({ estados = null, departamentos = null, sedes
  *    items: [{ departamentoId, nombre, incumplimientos, pct }]
  *  }
  */
-export async function getTopDepartamentosIncumplimientoEtapas({
+async function getTopDepartamentosIncumplimientoEtapas({
     limit = 5,
     estados = null,
     departamentos = null,
@@ -707,16 +707,17 @@ export async function getTopDepartamentosIncumplimientoEtapas({
 }
 
 /**
- * Array de 12 elementos con resumen mensual de vacantes abiertas, finalizadas y aumentoDotacion,
+ * Array de 12 elementos con resumen mensual de vacantes abiertas, finalizadas, aumentoDotacion e ingresos,
  * tomando como mes de referencia el de la vacante más “nueva” según:
  *   fechaRef = COALESCE(fechaCumplimiento(última etapa por orden), fechaInicioVacante)
- * La agrupación mensual se hace por fechaRef.
+ * La agrupación mensual de abiertas/finalizadas/aumentoDotacion se hace por fechaRef.
+ * La agrupación mensual de ingresos se hace por v.fechaIngreso (si existe).
  */
-export async function getResumenVacantesMensualUltimos12Meses() {
+async function getResumenVacantesMensualUltimos12Meses() {
     try {
       const currentUser = getCurrentUser();
   
-      // 1) Mes de referencia por fechaRef (ultima etapa cumplida o fechaInicio)
+      // 1) Mes de referencia por fechaRef (última etapa cumplida o fechaInicio)
       const [rowRef] = await prisma.$queryRaw`
         SELECT COALESCE(le."fechaCumplimiento", v."fechaInicio") AS "fechaRef"
         FROM "Vacante" v
@@ -742,7 +743,7 @@ export async function getResumenVacantesMensualUltimos12Meses() {
       const inicioRango = mesRef.subtract(11, 'month').startOf('month');
       const finRango = mesRef.endOf('month');
   
-      // 2) Traer vacantes con fechaRef dentro del rango de 12 meses
+      // 2) Traer vacantes con fechaRef dentro del rango de 12 meses (para abiertas/finalizadas/aumentoDotacion)
       const vacantes = await prisma.$queryRaw`
         SELECT
           v."id",
@@ -765,7 +766,19 @@ export async function getResumenVacantesMensualUltimos12Meses() {
               BETWEEN ${inicioRango.toDate()}::timestamptz AND ${finRango.toDate()}::timestamptz
       `;
   
-      // 3) Inicializar 12 meses
+      // 3) Traer ingresos dentro del mismo rango de 12 meses (independiente de fechaRef)
+      const ingresos = await prisma.$queryRaw`
+        SELECT
+          v."fechaIngreso"
+        FROM "Vacante" v
+        WHERE v."empresaId" = ${currentUser.empresaId}::uuid
+          AND v."activo" = TRUE
+          AND v."estado" IN ('abierta', 'finalizada')
+          AND v."fechaIngreso" IS NOT NULL
+          AND v."fechaIngreso" BETWEEN ${inicioRango.toDate()}::timestamptz AND ${finRango.toDate()}::timestamptz
+      `;
+  
+      // 4) Inicializar 12 meses
       const meses = [];
       for (let i = 0; i < 12; i++) {
         const base = inicioRango.add(i, 'month');
@@ -774,10 +787,11 @@ export async function getResumenVacantesMensualUltimos12Meses() {
           abiertas: 0,
           finalizadas: 0,
           aumentoDotacion: 0,
+          ingresos: 0,
         });
       }
   
-      // 4) Contar por mes de fechaRef
+      // 5) Contar por mes de fechaRef (abiertas/finalizadas/aumentoDotacion)
       for (const v of vacantes) {
         const fiMes = dayjs.utc(v.fechaRef).startOf('month');
         const idx = fiMes.diff(inicioRango, 'month');
@@ -788,6 +802,15 @@ export async function getResumenVacantesMensualUltimos12Meses() {
         }
       }
   
+      // 6) Contar ingresos por v.fechaIngreso
+      for (const r of ingresos) {
+        const ingresoMes = dayjs.utc(r.fechaIngreso).startOf('month');
+        const idxIngreso = ingresoMes.diff(inicioRango, 'month');
+        if (idxIngreso >= 0 && idxIngreso < 12) {
+          meses[idxIngreso].ingresos++;
+        }
+      }
+  
       return meses;
     } catch (e) {
       // Si vuelve a quejarse por tipos, revisa que empresaId en DB sea UUID y que currentUser.empresaId sea el string UUID
@@ -795,12 +818,37 @@ export async function getResumenVacantesMensualUltimos12Meses() {
     }
 }
 
-
+// Promedio de días hábiles para finalizar una vacante (materializado en Vacante.diasHabilesFinalizacion).
+// Considera solo vacantes finalizadas y activas de la empresa actual con el campo no nulo.
+async function getPromedioDiasFinalizacion() {
+    try {
+      const currentUser = getCurrentUser()
+  
+      const [row] = await prisma.$queryRaw`
+        SELECT
+          ROUND(AVG(v."diasHabilesFinalizacion")::numeric, 2) AS "promedioDias",
+          COUNT(v."diasHabilesFinalizacion")::int AS "consideradas"
+        FROM "Vacante" v
+        WHERE v."empresaId" = ${currentUser.empresaId}::uuid
+          AND v."activo" = TRUE
+          AND v."estado" = 'finalizada'
+          AND v."diasHabilesFinalizacion" IS NOT NULL
+      `
+  
+      return {
+        promedioDias: row?.promedioDias != null ? Number(row.promedioDias) : null,
+        consideradas: row?.consideradas ?? 0,
+      }
+    } catch (e) {
+      throw mapPrismaError(e, { resource: 'Promedio días finalización' })
+    }
+}
 
 
 export const ReporteService = {
     generarReporte,
     getSLAResumenMaximo,
     getTopDepartamentosIncumplimientoEtapas,
-    getResumenVacantesMensualUltimos12Meses
+    getResumenVacantesMensualUltimos12Meses,
+    getPromedioDiasFinalizacion
 }
