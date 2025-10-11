@@ -708,71 +708,90 @@ export async function getTopDepartamentosIncumplimientoEtapas({
 
 /**
  * Array de 12 elementos con resumen mensual de vacantes abiertas, finalizadas y aumentoDotacion,
- * tomando como mes de referencia el de la vacante más nueva (por fechaInicio).
+ * tomando como mes de referencia el de la vacante más “nueva” según:
+ *   fechaRef = COALESCE(fechaCumplimiento(última etapa por orden), fechaInicioVacante)
+ * La agrupación mensual se hace por fechaRef.
  */
-async function getResumenVacantesMensualUltimos12Meses() {
+export async function getResumenVacantesMensualUltimos12Meses() {
     try {
-        const currentUser = getCurrentUser();
-
-        const vacanteMasNueva = await prisma.vacante.findFirst({
-            where: {
-                empresaId: currentUser.empresaId,
-                activo: true,
-                estado: { in: ['abierta', 'finalizada'] },
-            },
-            orderBy: { fechaInicio: 'desc' },
-            select: { fechaInicio: true },
+      const currentUser = getCurrentUser();
+  
+      // 1) Mes de referencia por fechaRef (ultima etapa cumplida o fechaInicio)
+      const [rowRef] = await prisma.$queryRaw`
+        SELECT COALESCE(le."fechaCumplimiento", v."fechaInicio") AS "fechaRef"
+        FROM "Vacante" v
+        LEFT JOIN LATERAL (
+          SELECT ve."fechaCumplimiento", pe."orden"
+          FROM "Vacante_Etapa" ve
+          JOIN "Proceso_Etapa" pe ON ve."procesoEtapaId" = pe."id"
+          WHERE ve."vacanteId" = v."id"
+          ORDER BY pe."orden" DESC
+          LIMIT 1
+        ) AS le ON TRUE
+        WHERE v."empresaId" = ${currentUser.empresaId}::uuid
+          AND v."activo" = TRUE
+          AND v."estado" IN ('abierta', 'finalizada')
+        ORDER BY "fechaRef" DESC
+        LIMIT 1;
+      `;
+  
+      const mesRef = rowRef?.fechaRef
+        ? dayjs.utc(rowRef.fechaRef).startOf('month')
+        : dayjs.utc().startOf('month');
+  
+      const inicioRango = mesRef.subtract(11, 'month').startOf('month');
+      const finRango = mesRef.endOf('month');
+  
+      // 2) Traer vacantes con fechaRef dentro del rango de 12 meses
+      const vacantes = await prisma.$queryRaw`
+        SELECT
+          v."id",
+          v."estado",
+          v."aumentoDotacion",
+          COALESCE(le."fechaCumplimiento", v."fechaInicio") AS "fechaRef"
+        FROM "Vacante" v
+        LEFT JOIN LATERAL (
+          SELECT ve."fechaCumplimiento", pe."orden"
+          FROM "Vacante_Etapa" ve
+          JOIN "Proceso_Etapa" pe ON ve."procesoEtapaId" = pe."id"
+          WHERE ve."vacanteId" = v."id"
+          ORDER BY pe."orden" DESC
+          LIMIT 1
+        ) AS le ON TRUE
+        WHERE v."empresaId" = ${currentUser.empresaId}::uuid
+          AND v."activo" = TRUE
+          AND v."estado" IN ('abierta', 'finalizada')
+          AND COALESCE(le."fechaCumplimiento", v."fechaInicio")
+              BETWEEN ${inicioRango.toDate()}::timestamptz AND ${finRango.toDate()}::timestamptz
+      `;
+  
+      // 3) Inicializar 12 meses
+      const meses = [];
+      for (let i = 0; i < 12; i++) {
+        const base = inicioRango.add(i, 'month');
+        meses.push({
+          label: base.format('MMM YYYY'),
+          abiertas: 0,
+          finalizadas: 0,
+          aumentoDotacion: 0,
         });
-
-        const mesRef = vacanteMasNueva
-            ? dayjs.utc(vacanteMasNueva.fechaInicio).startOf('month')
-            : dayjs.utc().startOf('month');
-
-        const inicioRango = mesRef.subtract(11, 'month').startOf('month');
-        const finRango = mesRef.endOf('month');
-
-        const vacantes = await prisma.vacante.findMany({
-            where: {
-                empresaId: currentUser.empresaId,
-                activo: true,
-                estado: { in: ['abierta', 'finalizada'] },
-                fechaInicio: {
-                    gte: inicioRango.toDate(),
-                    lte: finRango.toDate(),
-                },
-            },
-            select: {
-                id: true,
-                estado: true,
-                aumentoDotacion: true,
-                fechaInicio: true,
-            },
-        });
-
-        const meses = [];
-        for (let i = 0; i < 12; i++) {
-            const base = inicioRango.add(i, 'month');
-            meses.push({
-                label: base.format('MMM YYYY'),
-                abiertas: 0,
-                finalizadas: 0,
-                aumentoDotacion: 0,
-            });
+      }
+  
+      // 4) Contar por mes de fechaRef
+      for (const v of vacantes) {
+        const fiMes = dayjs.utc(v.fechaRef).startOf('month');
+        const idx = fiMes.diff(inicioRango, 'month');
+        if (idx >= 0 && idx < 12) {
+          if (v.estado === 'abierta') meses[idx].abiertas++;
+          if (v.estado === 'finalizada') meses[idx].finalizadas++;
+          if (v.aumentoDotacion) meses[idx].aumentoDotacion++;
         }
-
-        for (const v of vacantes) {
-            const fiMes = dayjs.utc(v.fechaInicio).startOf('month');
-            const idx = fiMes.diff(inicioRango, 'month');
-            if (idx >= 0 && idx < 12) {
-                if (v.estado === 'abierta') meses[idx].abiertas++;
-                if (v.estado === 'finalizada') meses[idx].finalizadas++;
-                if (v.aumentoDotacion) meses[idx].aumentoDotacion++;
-            }
-        }
-
-        return meses;
+      }
+  
+      return meses;
     } catch (e) {
-        throw mapPrismaError(e, { resource: 'Resumen Vacantes Mensual 12m' });
+      // Si vuelve a quejarse por tipos, revisa que empresaId en DB sea UUID y que currentUser.empresaId sea el string UUID
+      throw mapPrismaError(e, { resource: 'Resumen Vacantes Mensual 12m' });
     }
 }
 

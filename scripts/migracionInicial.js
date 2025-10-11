@@ -6,8 +6,8 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
 dayjs.extend(utc)
 
-const empresaId = '93c01d04-0164-4a73-b9d8-05b427d2bf19'
-const procesoId = '249120e6-b84c-4d7c-b517-eac95fa43776'
+const empresaId = '8b53461a-a79d-478a-902f-a95ba46137e6'
+const procesoId = '2095b78e-3384-47d5-ad57-6df3a5ae4147'
 
 // Enums mapeados a tu schema
 const ESTADO_VACANTE = {
