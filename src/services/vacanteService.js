@@ -832,11 +832,11 @@ async function patch(id, input) {
                     ...(data.nombre !== undefined ? { nombre: data.nombre } : {}),
                     ...(data.departamentoId !== undefined ? { departamentoId: data.departamentoId ?? null } : {}),
                     ...(data.sedeId !== undefined ? { sedeId: data.sedeId ?? null } : {}),
-                    ...(data.estado !== undefined ? { estado: data.estado } : {}),
                     ...(data.fechaIngreso !== undefined ? { fechaIngreso: data.fechaIngreso } : {}),
                     ...(data.fechaConfirmacion !== undefined ? { fechaConfirmacion: data.fechaConfirmacion } : {}),
                     fechaInicio: newFechaInicio,
                     um: currentUser.id,
+                    estado: 'abierta'
                 },
             })
 

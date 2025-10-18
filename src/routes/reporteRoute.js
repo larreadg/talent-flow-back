@@ -44,4 +44,10 @@ router.get(
     ReporteController.getPromedioDiasFinalizacion 
 )
 
+router.get(
+    '/resultados-busquedas',
+    verifyRol(TF_ALL_ROLS),
+    ReporteController.getResumenResultadosDeBusqueda 
+)
+
 export default router
