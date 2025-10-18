@@ -1146,8 +1146,7 @@ async function completarEtapa(input) {
                 // 👇 Aseguramos que la vacante esté abierta; si estaba finalizada, la reabrimos.
                 await tx.vacante.update({
                     where: { id: etapa.vacanteId },
-                    data: { estado: 'abierta', um: currentUser.id },
-                    diasHabilesFinalizacion: null
+                    data: { estado: 'abierta', um: currentUser.id, diasHabilesFinalizacion: null },                    
                 })
 
                 let cursor = dayjs.utc(doneDate) // la siguiente empieza el mismo día de la finalización real de n
