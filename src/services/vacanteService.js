@@ -370,10 +370,17 @@ async function getById(id) {
             const businessDaysOfStage = listBusinessDaysInclusive(eV.fechaInicio, endForElapsed);
 
             let contributes = 0;
-            for (const ymd of businessDaysOfStage) {
-                if (!coveredBusinessDays.has(ymd)) {
-                    coveredBusinessDays.add(ymd);
-                    contributes++;
+            if (
+                eV.estado === 'finalizada' &&
+                eV.fechaInicio &&
+                eV.fechaCumplimiento
+            ) {
+                const businessDaysOfStage = listBusinessDaysInclusive(eV.fechaInicio, eV.fechaCumplimiento);
+                for (const ymd of businessDaysOfStage) {
+                    if (!coveredBusinessDays.has(ymd)) {
+                        coveredBusinessDays.add(ymd);
+                        contributes++;
+                    }
                 }
             }
             eV.totalDiasUnicosContribuidos = contributes;
