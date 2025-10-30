@@ -1,7 +1,17 @@
 import { prisma } from '../prismaClient.js'
+import { Prisma } from '@prisma/client'
 import { mapPrismaError, TalentFlowError } from '../utils/error.js'
 import { getCurrentUser } from '../middlewares/requestContext.js'
-import { toDateOnly, addBusinessDaysInclusive, buildOrderBy, STATES, normalizeList } from '../utils/vacanteUtils.js'
+import {
+    toDateOnly, 
+    addBusinessDaysInclusive,
+    fromYMD, 
+    toYMD,
+    addDaysUTC,
+    normList,
+    businessDaysExclHolidays,
+    businessDaysAfterExclHolidays
+} from '../utils/vacanteUtils.js'
 import { pick } from '../utils/utils.js'
 import dayjs from 'dayjs'
 import 'dayjs/locale/es.js'
@@ -13,161 +23,131 @@ dayjs.locale('es')
 
 const PATCH_ALLOWED = ['nombre', 'departamentoId', 'sedeId', 'fechaInicio', 'estado', 'aumentoDotacion', 'resultado', 'fechaIngreso', 'fechaConfirmacion']
 
-/**
- * GET: Lista vacantes por empresa del usuario actual con paginación y filtro.
- * Params opcionales:
- * - limit  (default 10)
- * - offset (default 0)
- * - filter (default null) -> busca en Vacante.nombre, Proceso.nombre, Departamento.nombre, Etapa.nombre
- *
- * Incluye:
- * - proceso (nombre)
- * - departamento (nombre)
- * - etapasVacante (ordenadas por procesoEtapa.orden) con datos de Etapa (nombre, slaDias)
- * - diasNoLaborales (ordenados por diaNoLaboral.fecha) con datos de DiaNoLaboral (id, nombre, fecha)
- */
-async function getByEmpresa({
+export async function getByEmpresa({
     limit = 10,
     offset = 0,
     filter = null,
     sortBy = 'nombre',
     sortDir = 'asc',
-    estados = null,
-    departamentos = null,
-    sedes = null,
+    estados = null, // ['abierta','finalizada',...]
+    departamentos = null, // ids -> area_solicitante_id
+    sedes = null, // ids -> sede_id
+    fechaInicioDesde = null, // 'YYYY-MM-DD'
+    fechaInicioHasta = null, // 'YYYY-MM-DD'
 } = {}) {
-    try {
-        const currentUser = getCurrentUser();
+    const currentUser = getCurrentUser()
+    const empresaId = currentUser?.empresaId
 
-        // Normalización de paginación y texto
-        const take = Number.isInteger(limit) && limit > 0 ? limit : 10;
-        const skip = Number.isInteger(offset) && offset >= 0 ? offset : 0;
-        const text = (typeof filter === 'string' && filter.trim()) ? filter.trim() : null;
+    // Sanitizar paginación
+    const take = Number.isInteger(limit) && limit > 0 ? limit : 10
+    const skip = Number.isInteger(offset) && offset >= 0 ? offset : 0
 
-        // Normalización de filtros (acepta csv o arrays)
-        const estadosListAll = normalizeList(estados).map(s => s.toLowerCase());
-        // Validar contra el enum/constante STATES (en minúsculas para comparar)
-        const STATES_LC = STATES.map(s => s.toLowerCase());
-        const estadosList = estadosListAll.filter(s => STATES_LC.includes(s));
+    // WHERE dinámico - construir las partes como strings
+    const whereConditions = [`empresa_id = '${empresaId}'`]
 
-        const departamentosList = normalizeList(departamentos);
-        const sedesList = normalizeList(sedes);
+    if (filter && String(filter).trim()) {
+        const q = `%${String(filter).trim().replace(/%/g, '').replace(/'/g, "''")}%`
+        whereConditions.push(`(nombre ILIKE '${q}' OR area_solicitante ILIKE '${q}' OR sede ILIKE '${q}')`)
+    }
 
-        // WHERE base
-        const baseWhere = {
-            empresaId: currentUser.empresaId,
-            activo: true,
-        };
+    const estadosList = normList(estados)
+    if (estadosList && estadosList.length) {
+        const arrayStr = estadosList.map(v => `'${String(v).replace(/'/g, "''")}'`).join(',')
+        whereConditions.push(`estado = ANY(ARRAY[${arrayStr}]::"VacanteEstado"[])`)
+    }
 
-        // Búsqueda por texto: permite matchear por nombre/relaciones y por estado parcial
-        const lc = text?.toLowerCase() ?? '';
-        const matchedStatesFromText = lc
-            ? STATES.filter(s => s.toLowerCase().includes(lc)) // permite "abier", "CERRA", etc.
-            : [];
+    const depsList = normList(departamentos)
+    if (depsList && depsList.length) {
+        const arrayStr = depsList.map(v => `'${String(v).replace(/'/g, "''")}'::uuid`).join(',')
+        whereConditions.push(`area_solicitante_id = ANY(ARRAY[${arrayStr}])`)
+    }
 
-        // Construimos el AND principal y metemos el OR del texto (si hay)
-        const and = [baseWhere];
+    const sedesList = normList(sedes)
+    if (sedesList && sedesList.length) {
+        const arrayStr = sedesList.map(v => `'${String(v).replace(/'/g, "''")}'::uuid`).join(',')
+        whereConditions.push(`sede_id = ANY(ARRAY[${arrayStr}])`)
+    }
 
-        if (estadosList.length) {
-            // Prisma compara respetando el enum definido; usamos los valores originales de STATES
-            // Mapear de lc -> valor exacto del enum en STATES
-            const estadosExact = estadosList
-                .map(lcVal => STATES.find(s => s.toLowerCase() === lcVal))
-                .filter(Boolean);
-            if (estadosExact.length) and.push({ estado: { in: estadosExact } });
-        }
+    if (fechaInicioDesde) {
+        whereConditions.push(`fecha_inicio >= '${fechaInicioDesde}'`)
+    }
+    if (fechaInicioHasta) {
+        whereConditions.push(`fecha_inicio <= '${fechaInicioHasta}'`)
+    }
 
-        if (departamentosList.length) {
-            and.push({ departamentoId: { in: departamentosList } });
-        }
+    const whereClause = whereConditions.length ? `WHERE ${whereConditions.join(' AND ')}` : ''
 
-        if (sedesList.length) {
-            and.push({ sedeId: { in: sedesList } });
-        }
+    // ORDER BY seguro
+    const dir = String(sortDir).toLowerCase() === 'desc' ? 'DESC' : 'ASC'
+    const validColumns = {
+        'nombre': 'nombre',
+        'fechaInicio': 'fecha_inicio',
+        'diasTranscurridosHoy': 'dias_transcurridos_hoy',
+        'areaSolicitante': 'area_solicitante',
+        'sede': 'sede',
+        'estado': 'estado'
+    }
+    const orderCol = validColumns[sortBy] || 'nombre'
+    const orderByClause = `ORDER BY ${orderCol} ${dir}`
 
-        if (text) {
-            and.push({
-                OR: [
-                    ...(matchedStatesFromText.length ? [{ estado: { in: matchedStatesFromText } }] : []), // Vacante.estado (enum)
-                    { nombre: { contains: text, mode: 'insensitive' } }, // Vacante.nombre
-                    { departamento: { nombre: { contains: text, mode: 'insensitive' } } }, // Departamento.nombre
-                    { sede: { nombre: { contains: text, mode: 'insensitive' } } }, // Sede.nombre
-                ],
-            });
-        }
+    // COUNT(*) total
+    const countQuery = Prisma.raw(`
+        SELECT COUNT(*)::int AS total
+        FROM "Vw_Vacante_Resumen"
+        ${whereClause}
+    `)
 
-        const where = and.length > 1 ? { AND: and } : baseWhere;
+    const countRows = await prisma.$queryRaw(countQuery)
+    const total = Array.isArray(countRows) && countRows[0]?.total ? Number(countRows[0].total) : 0
 
-        // Total para meta
-        const total = await prisma.vacante.count({ where });
+    // Datos paginados
+    const dataQuery = Prisma.raw(`
+        SELECT
+            empresa_id,
+            vacante_id,
+            nombre,
+            fecha_inicio,
+            dias_transcurridos_hoy,
+            dias_transcurridos_finalizacion,
+            area_solicitante,
+            area_solicitante_id,
+            sede,
+            sede_id,
+            estado,
+            etapas_finalizadas,
+            etapas_totales,
+            progreso_pct
+        FROM "Vw_Vacante_Resumen"
+        ${whereClause}
+        ${orderByClause}
+        LIMIT ${take} OFFSET ${skip}
+    `)
 
-        const orderBy = buildOrderBy(sortBy, sortDir);
+    const rows = await prisma.$queryRaw(dataQuery)
 
-        const vacantes = await prisma.vacante.findMany({
-            where,
-            orderBy,
-            skip,
-            take,
-            include: {
-                proceso: { select: { nombre: true } },
-                departamento: { select: { nombre: true } },
-                sede: { select: { nombre: true } },
-                etapasVacante: {
-                    orderBy: { procesoEtapa: { orden: 'asc' } },
-                    include: {
-                        procesoEtapa: {
-                            select: {
-                                id: true,
-                                orden: true,
-                                etapa: { select: { nombre: true, slaDias: true } },
-                            },
-                        },
-                    },
-                },
-                // Días no laborales que afectan a la vacante
-                diasNoLaborales: {
-                    orderBy: { diaNoLaboral: { fecha: 'asc' } },
-                    include: {
-                        diaNoLaboral: {
-                            select: {
-                                id: true,
-                                nombre: true,
-                                fecha: true,
-                            },
-                        },
-                    },
-                },
-            },
-        });
+    const items = rows.map((v) => ({
+        id: v.vacante_id,
+        nombre: v.nombre,
+        fechaInicio: v.fecha_inicio ? dayjs.utc(v.fecha_inicio).format('YYYY-MM-DD') : null,
+        diasTranscurridosHoy: Number(v.dias_transcurridos_hoy) || 0,
+        diasTranscurridosFinalizacion: v.dias_transcurridos_finalizacion != null ? Number(v.dias_transcurridos_finalizacion) : null,
+        areaSolicitante: v.area_solicitante,
+        areaSolicitanteId: v.area_solicitante_id,
+        sede: v.sede,
+        sedeId: v.sede_id,
+        estado: v.estado,
+        etapasFinalizadas: Number(v.etapas_finalizadas) || 0,
+        etapasTotales: Number(v.etapas_totales) || 0,
+        progresoPct: v.progreso_pct != null ? Number(v.progreso_pct) : 0,
+    }))
 
-        return {
-            data: vacantes.map((el) => {
-                const total = el.etapasVacante.length;
-                const finalizadas = el.etapasVacante.reduce(
-                    (acc, ev) => acc + (ev.estado === 'finalizada' ? 1 : 0),
-                    0
-                );
-
-                // porcentaje 0..100 con 2 decimales (número)
-                const progress = total ? Number(((finalizadas / total) * 100).toFixed(2)) : 0;
-
-                return {
-                    ...el,
-                    fechaInicio: el.fechaInicio ? el.fechaInicio.toISOString().slice(0, 10) : null,
-                    progress,                         // ej: 66.67
-                    progressLabel: `${progress}%`,    // ej: "66.67%"
-                };
-            }),
-            meta: {
-                total,
-                limit: take,
-                offset: skip,
-                returned: vacantes.length,
-                hasMore: skip + vacantes.length < total,
-            },
-        };
-    } catch (e) {
-        throw mapPrismaError(e, { resource: 'Vacante' });
+    return {
+        total,
+        items,
+        limit: take,
+        offset: skip,
+        sortBy,
+        sortDir: dir.toLowerCase(),
     }
 }
 
@@ -215,72 +195,10 @@ async function getById(id) {
             throw new TalentFlowError(`La vacante ${id} no existe`, 404);
         }
 
-        /** ----------------------------
-         * Helpers de fechas hábiles
-         * ---------------------------- */
-        const toYMD = (d) => (d ? new Date(d).toISOString().slice(0, 10) : null);
-        const fromYMD = (s) => new Date(s + "T00:00:00.000Z");
-        const addDaysUTC = (date, days) => {
-            const d = new Date(date.getTime());
-            d.setUTCDate(d.getUTCDate() + days);
-            return d;
-        };
-
         // Set de feriados asociados a la vacante
         const holidaySet = new Set(
             (vacante.diasNoLaborales ?? []).map((vdl) => toYMD(vdl.diaNoLaboral.fecha))
         );
-
-        const isWorkingDay = (date) => {
-            const ymd = toYMD(date);
-            const dow = date.getUTCDay(); // 0=Dom, 6=Sáb
-            if (dow === 0 || dow === 6) return false;
-            if (holidaySet.has(ymd)) return false;
-            return true;
-        };
-
-        // Cuenta días hábiles INCLUSIVOS entre startStr y endStr (YYYY-MM-DD).
-        const countBusinessDaysInclusive = (startStr, endStr) => {
-            if (!startStr || !endStr) return 0;
-            let start = fromYMD(startStr);
-            const end = fromYMD(endStr);
-            if (start > end) return 0;
-
-            let count = 0;
-            while (start <= end) {
-                if (isWorkingDay(start)) count++;
-                start = addDaysUTC(start, 1);
-            }
-            return count;
-        };
-
-        // Lista de días hábiles (YYYY-MM-DD) entre start y end INCLUSIVO
-        const listBusinessDaysInclusive = (startStr, endStr) => {
-            const out = [];
-            if (!startStr || !endStr) return out;
-            let cur = fromYMD(startStr);
-            const end = fromYMD(endStr);
-            if (cur > end) return out;
-            while (cur <= end) {
-                if (isWorkingDay(cur)) out.push(toYMD(cur));
-                cur = addDaysUTC(cur, 1);
-            }
-            return out;
-        };
-
-        // Lista de días hábiles desde el día siguiente a 'fromStr' hasta 'toStr' inclusive
-        const listBusinessDaysAfterDate = (fromStr, toStr) => {
-            const out = [];
-            if (!fromStr || !toStr) return out;
-            let cur = addDaysUTC(fromYMD(fromStr), 1);
-            const end = fromYMD(toStr);
-            if (cur > end) return out;
-            while (cur <= end) {
-                if (isWorkingDay(cur)) out.push(toYMD(cur));
-                cur = addDaysUTC(cur, 1);
-            }
-            return out;
-        };
 
         /** ----------------------------
          * Construcción de disabledDates
@@ -331,52 +249,39 @@ async function getById(id) {
             eV.fechaFinalizacion = eV.fechaFinalizacion ? toYMD(eV.fechaFinalizacion) : null;
             eV.fechaCumplimiento = eV.fechaCumplimiento ? toYMD(eV.fechaCumplimiento) : null;
 
-            // Etiquetas legibles
-            eV.fechaInicioLabel = eV.fechaInicio
-                ? dayjs(eV.fechaInicio).format("ddd, DD [de] MMM [de] YYYY")
-                : null;
-            eV.fechaFinalizacionLabel = eV.fechaFinalizacion
-                ? dayjs(eV.fechaFinalizacion).format("ddd, DD [de] MMM [de] YYYY")
-                : null;
-            eV.fechaCumplimientoLabel = eV.fechaCumplimiento
-                ? dayjs(eV.fechaCumplimiento).format("ddd, DD [de] MMM [de] YYYY")
-                : null;
+            // Etiquetas legibles (sin cambios)
+            eV.fechaInicioLabel = eV.fechaInicio ? dayjs(eV.fechaInicio).format("ddd, DD [de] MMM [de] YYYY") : null;
+            eV.fechaFinalizacionLabel = eV.fechaFinalizacion ? dayjs(eV.fechaFinalizacion).format("ddd, DD [de] MMM [de] YYYY") : null;
+            eV.fechaCumplimientoLabel = eV.fechaCumplimiento ? dayjs(eV.fechaCumplimiento).format("ddd, DD [de] MMM [de] YYYY") : null;
 
-            // ---- Métricas hábiles por etapa ----
+            // ---- Métricas hábiles por etapa (EXCLUYENDO feriados propios de la vacante) ----
+            // Antes: countBusinessDaysInclusive(...)  ⇒ no excluía feriados de la vacante
             const totalDiasReal = eV.fechaInicio && eV.fechaCumplimiento
-                ? countBusinessDaysInclusive(eV.fechaInicio, eV.fechaCumplimiento)
+                ? businessDaysExclHolidays(eV.fechaInicio, eV.fechaCumplimiento, holidaySet).length   // 👈 CHANGED
                 : 0;
 
             const totalDiasPlan = eV.fechaInicio && eV.fechaFinalizacion
-                ? countBusinessDaysInclusive(eV.fechaInicio, eV.fechaFinalizacion)
+                ? businessDaysExclHolidays(eV.fechaInicio, eV.fechaFinalizacion, holidaySet).length   // 👈 CHANGED
                 : 0;
 
             eV.totalDias = totalDiasReal || totalDiasPlan || 0;
 
-            // Retraso hábil (si cumplió después del plan)
+            // Retraso hábil (si cumplió después del plan), excluyendo feriados  👈 CHANGED
             let retraso = 0;
             if (eV.fechaCumplimiento && eV.fechaFinalizacion) {
                 if (fromYMD(eV.fechaCumplimiento) > fromYMD(eV.fechaFinalizacion)) {
-                    const delayDays = listBusinessDaysAfterDate(eV.fechaFinalizacion, eV.fechaCumplimiento);
+                    const delayDays = businessDaysAfterExclHolidays(eV.fechaFinalizacion, eV.fechaCumplimiento, holidaySet); // 👈 CHANGED
                     retraso = delayDays.length;
-                    // Agregar al set global de retrasos únicos
                     delayDays.forEach((d) => coveredDelayDays.add(d));
                 }
             }
             eV.totalRetrasoDias = retraso;
 
-            // ---- Contribución de días hábiles ÚNICOS por etapa ----
-            const endForElapsed = eV.fechaCumplimiento || eV.fechaFinalizacion;
-            const businessDaysOfStage = listBusinessDaysInclusive(eV.fechaInicio, endForElapsed);
-
+            // ---- Contribución de días hábiles ÚNICOS por etapa (finalizadas) ----
             let contributes = 0;
-            if (
-                eV.estado === 'finalizada' &&
-                eV.fechaInicio &&
-                eV.fechaCumplimiento
-            ) {
-                const businessDaysOfStage = listBusinessDaysInclusive(eV.fechaInicio, eV.fechaCumplimiento);
-                for (const ymd of businessDaysOfStage) {
+            if (eV.estado === 'finalizada' && eV.fechaInicio && eV.fechaCumplimiento) {
+                const days = businessDaysExclHolidays(eV.fechaInicio, eV.fechaCumplimiento, holidaySet); // 👈 CHANGED
+                for (const ymd of days) {
                     if (!coveredBusinessDays.has(ymd)) {
                         coveredBusinessDays.add(ymd);
                         contributes++;
@@ -392,6 +297,22 @@ async function getById(id) {
 
         const totalDiasHabilesUnicos = coveredBusinessDays.size;
         const totalDiasRetrasosUnicos = coveredDelayDays.size;
+
+        // Dias transcurridos hasta la fecha
+        const fechaInicioProceso = toYMD(vacante.fechaInicio)
+        const hoyYMD = toYMD(dayjs().format('YYYY-MM-DD'))
+
+        console.log(fechaInicioProceso, hoyYMD)
+
+        if (fromYMD(fechaInicioProceso) > fromYMD(hoyYMD)) {
+            vacante.diasTranscurridosHoy = 0
+            vacante.diasTranscurridosHoyDetalle = { desde: fechaInicioProceso, hasta: hoyYMD }
+        } else {
+            const dias = businessDaysExclHolidays(fechaInicioProceso, hoyYMD, holidaySet)
+            vacante.diasTranscurridosHoy = dias.length
+            vacante.diasTranscurridosHoyDetalle = { desde: fechaInicioProceso, hasta: hoyYMD }
+        }
+
 
         /** Respuesta */
         return {
@@ -648,15 +569,15 @@ async function patch(id, input) {
 
         const nextEstado = data.estado
         if (nextEstado) {
-            if (current.estado === 'abierta' && !['abierta','pausada','cancelada'].includes(nextEstado)) {
+            if (current.estado === 'abierta' && !['abierta', 'pausada', 'cancelada'].includes(nextEstado)) {
                 throw new TalentFlowError('Una vacante abierta solo se puede pausar o cancelar', 400);
             }
 
-            if (current.estado === 'finalizada' && !['finalizada','cancelada'].includes(nextEstado)) {
+            if (current.estado === 'finalizada' && !['finalizada', 'cancelada'].includes(nextEstado)) {
                 throw new TalentFlowError('Una vacante finalizada solo se puede cancelar', 400);
             }
 
-            if (current.estado === 'pausada' && !['pausada','abierta'].includes(nextEstado)) {
+            if (current.estado === 'pausada' && !['pausada', 'abierta'].includes(nextEstado)) {
                 throw new TalentFlowError('Una vacante pausada solo se puede abrir', 400);
             }
 
@@ -708,7 +629,7 @@ async function patch(id, input) {
             }
             data.fechaIngreso = newFechaIngreso
         }
-        
+
         if ('fechaConfirmacion' in data && data.fechaConfirmacion !== null) {
             let newFechaConfirmacion = toDateOnly(data.fechaConfirmacion, 'fechaConfirmacion')
             if (dayjs.utc(newFechaConfirmacion).isBefore(dayjs.utc(current.fechaInicio))) {
@@ -1074,8 +995,8 @@ async function completarEtapa(input) {
             }
         })
         if (!etapa) throw new TalentFlowError('La etapa indicada no existe.', 404)
- 
-        if(etapa.vacante.estado !== 'abierta') throw new TalentFlowError('La vacante debe estar abierta', 409)
+
+        if (etapa.vacante.estado !== 'abierta') throw new TalentFlowError('La vacante debe estar abierta', 409)
 
         // Traer TODAS las etapas de esa vacante, ordenadas
         const etapas = await prisma.vacanteEtapa.findMany({
@@ -1153,7 +1074,7 @@ async function completarEtapa(input) {
                 // 👇 Aseguramos que la vacante esté abierta; si estaba finalizada, la reabrimos.
                 await tx.vacante.update({
                     where: { id: etapa.vacanteId },
-                    data: { estado: 'abierta', um: currentUser.id, diasHabilesFinalizacion: null },                    
+                    data: { estado: 'abierta', um: currentUser.id, diasHabilesFinalizacion: null },
                 })
 
                 let cursor = dayjs.utc(doneDate) // la siguiente empieza el mismo día de la finalización real de n

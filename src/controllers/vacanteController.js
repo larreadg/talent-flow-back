@@ -43,6 +43,7 @@ async function getAll(req, res) {
       .status(200)
       .send(new Response('success', 200, result, 'Vacantes listadas correctamente'))
   } catch (e) {
+    console.log(e)
     if (e instanceof TalentFlowError) {
       return res
         .status(e.code)
